@@ -1,115 +1,45 @@
-import 'package:clean_architecture_getx/data/datasource/remote/request/coin_list_param.dart';
-import 'package:clean_architecture_getx/domain/model/coin.dart';
-import 'package:clean_architecture_getx/domain/usecase/get_coin_list_use_case.dart';
-import 'package:clean_architecture_getx/domain/usecase/get_trending_coin_list_use_case.dart';
+import 'dart:async';
+
+import 'package:clean_architecture_getx/data/networking/networking.dart';
+import 'package:clean_architecture_getx/domain/model/download_pdf_param.dart';
+import 'package:clean_architecture_getx/domain/model/pdf.dart';
+import 'package:clean_architecture_getx/domain/usecase/download_pdf_use_case.dart';
 import 'package:clean_architecture_getx/presentation/main_controller.dart';
 import 'package:clean_architecture_getx/util/resource.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HomeController extends GetxController {
-  HomeController(
-      {required this.getCoinListUseCase,
-      required this.getTrendingCoinListUseCase});
+  HomeController({required this.downloadPdfUseCase});
 
-  final GetCoinListUseCase getCoinListUseCase;
-  final GetTrendingCoinListUseCase getTrendingCoinListUseCase;
+  final DownloadPdfUseCase downloadPdfUseCase;
 
   final MainController mainController = Get.find();
 
-  RxList<Coin> coinList = RxList.empty();
-  RxList<Coin> trendingCoinList = RxList.empty();
+  RxList<Pdf> pdfList = RxList.empty();
 
-  RxInt tabIndex = 0.obs;
+  Rx<double> downloadProgress = 0.0.obs;
+  Rx<double> maxProgressValue = 0.0.obs;
 
-  int coinListPage = 1;
-  bool isCoinPageLoading = false;
-  RxBool isEndCoinList = false.obs;
+  final TextEditingController pdfUrlController = TextEditingController()
+    ..text = 'https://research.nhm.org/pdfs/10840/10840-001.pdf';
 
-  final ScrollController coinListScrollController = ScrollController();
+  Future<void> downloadPdf() async {
+    final path = '${(await getApplicationDocumentsDirectory()).path}/pdfs';
 
-  @override
-  void onReady() async {
-    super.onReady();
-
-    await getTrendingCoinList();
-
-    coinListScrollController.addListener(() {
-      //When the transaction list is fully scrolled => load more transactions
-      // and add them to the transaction list
-      if (coinListScrollController.position.atEdge &&
-          !isCoinPageLoading &&
-          !isEndCoinList.value) {
-        loadNewCoinPage();
-      }
+    Get.find<Networking>().setOnDownloadProgressReceived((received, total) {
+      downloadProgress.value = received / total;
     });
-  }
 
-  void onTabSelected(int index) {
-    if (tabIndex.value == index) return;
+    final downloadPdfResult = await downloadPdfUseCase(
+        DownloadPdfParam(url: pdfUrlController.text, path: path));
 
-    tabIndex.value = index;
-
-    if (index == 0) {
-      getTrendingCoinList();
-    } else {
-      getCoinList();
-    }
-  }
-
-  Future<void> getTrendingCoinList() async {
-    mainController.isLoading.value = true;
-
-    final trendingCoinListResult = await getTrendingCoinListUseCase();
-
-    if (trendingCoinListResult is Success) {
-      trendingCoinList.clear();
-      trendingCoinList.value = trendingCoinListResult.data!;
+    if (downloadPdfResult is Success) {
+      print('Downloaded PDF: ${downloadPdfResult.data}');
+      pdfList.add(downloadPdfResult.data!);
     } else {
       //Display error
     }
-
-    mainController.isLoading.value = false;
-  }
-
-  Future<void> getCoinList() async {
-    mainController.isLoading.value = true;
-
-    final coinListResult = await getCoinListUseCase(CoinListParam(
-        page: coinListPage,
-        perPage: 20,
-        vsCurrency: 'usd',
-        order: 'market_cap_desc',
-        sparkline: false));
-
-    if (coinListResult is Success) {
-      coinList.clear();
-      coinList.value = coinListResult.data!;
-    } else {
-      //Display error
-    }
-
-    mainController.isLoading.value = false;
-  }
-
-  void loadNewCoinPage() async {
-    isCoinPageLoading = true;
-    coinListPage++;
-
-    final coinListResult = await getCoinListUseCase(CoinListParam(
-        page: coinListPage,
-        perPage: 20,
-        vsCurrency: 'usd',
-        order: 'market_cap_desc',
-        sparkline: false));
-
-    if (coinListResult is Success) {
-      coinList.addAll(coinListResult.data!);
-      isEndCoinList.value = coinListResult.data!.length < 20;
-    } else {
-      //Display error
-    }
-
-    isCoinPageLoading = false;
   }
 }

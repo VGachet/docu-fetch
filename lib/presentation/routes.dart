@@ -1,5 +1,6 @@
 import 'package:clean_architecture_getx/presentation/screen/home/home_binding.dart';
 import 'package:clean_architecture_getx/presentation/screen/home/home_screen.dart';
+import 'package:clean_architecture_getx/presentation/screen/pdf_screen/pdf_screen.dart';
 import 'package:clean_architecture_getx/presentation/screen/splashscreen/splash_screen.dart';
 import 'package:clean_architecture_getx/presentation/screen/splashscreen/splash_screen_binding.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 mixin Routes {
   static const String home = '/home';
   static const String splashscreen = '/splash_screen';
+  static const String pdf = '/pdf';
 
   static final pages = [
     GetPage(
@@ -20,6 +22,11 @@ mixin Routes {
       page: () => HomeScreen(),
       binding: HomeBinding(),
       transition: Transition.noTransition,
+    ),
+    GetPage(
+      name: pdf,
+      page: () => PdfScreen(),
+      transition: Transition.cupertino,
     ),
   ];
 }

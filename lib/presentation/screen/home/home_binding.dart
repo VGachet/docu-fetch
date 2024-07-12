@@ -5,8 +5,7 @@ class HomeBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<HomeController>(() => HomeController(
-          getCoinListUseCase: Get.find(),
-          getTrendingCoinListUseCase: Get.find(),
+          downloadPdfUseCase: Get.find(),
         ));
   }
 }
