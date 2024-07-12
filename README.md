@@ -1,29 +1,51 @@
-# Clean Architecture Getx Flutter Template
+# Docu Fetch
 
-This is a Flutter template using **Clean Architecture**, **GetX** for state management and reactivity and **Retrofit** as the HTTP client.
-
-This project is a starting point for building an **easy scalable Flutter application**.
-
-I used the amazing **Coingecko API** as an example [Coingecko API Doc](https://www.coingecko.com/en/api)
-
-With the help of **GitHub Copilot**, I was able to create this project in a few hours.
-
+Docu Fetch is a mobile application that fetches PDF from a server, import it in the app and and allows you to read it in a nice PDF viewer.
 
 ## Getting Started
 
 - Clone the project
 - Run `flutter pub get`
-- Run `flutter pub run build_runner build --delete-conflicting-outputs`
+
+## How to use Docu Fetch
+
+### Server side setup
+
+- Put every PDF files you want to fetch in an open folder of your server
+- You can put a .json file in the same folder with the same name as the PDF file to add a title and a description to the PDF
+    - Example :
+  ```
+  { "pdfs": [
+    {
+      "title": "My PDF Title 1",
+      "description": "My PDF Description 1"
+      "path": "my_pdf_1.pdf"
+    },
+    {
+      "title": "My PDF Title 2",
+      "description": "My PDF Description 2"
+      "path": "my_pdf_2.pdf"
+    },
+    ...
+    ]
+  }
+  ```
+
+### Client side
+
+- In the Home page, select the icon "Add PDF"
+- In the field you just have to add the url (repo) where your pdf files are stored
+- Click on "Add" and the app will fetch the PDF files and display them in the Home page
 
 
 ## Included Functionalities
 
 - Clean Architecture
 - GetX : State management and reactivity
-- Retrofit : Http client
+- Dio : Http client
 - Localized string powered by GetX
-- Infinite scroll pagination, a simple implementation
 - Light Mode / Dark Mode (Custom Theme implementation)
+- PDFView customized
 
 
 ### Localization
