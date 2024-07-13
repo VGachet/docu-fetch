@@ -21,4 +21,9 @@ class NetworkingImpl implements Networking {
       Function(int, int) onDownloadProgressReceived) {
     _onDownloadProgressReceived = onDownloadProgressReceived;
   }
+
+  @override
+  Future<Response> get({required String url}) {
+    return dio.get(url);
+  }
 }

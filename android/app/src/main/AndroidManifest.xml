@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.vgachet.clean_architecture.clean_architecture_getx">
+    package="com.docu.fetch">
    <application
-        android:label="clean_architecture_getx"
+        android:label="DocuFetch"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

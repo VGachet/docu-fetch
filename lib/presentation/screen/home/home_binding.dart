@@ -6,6 +6,7 @@ class HomeBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<HomeController>(() => HomeController(
           downloadPdfUseCase: Get.find(),
+          getPdfListUseCase: Get.find(),
         ));
   }
 }

@@ -1,4 +1,4 @@
-package com.vgachet.clean_architecture.clean_architecture_getx
+package com.docu.fetch
 
 import io.flutter.embedding.android.FlutterActivity
 
