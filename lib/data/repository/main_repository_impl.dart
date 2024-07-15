@@ -1,14 +1,17 @@
-import 'package:clean_architecture_getx/data/datasource/remote/response/pdf_dto.dart';
-import 'package:clean_architecture_getx/data/networking/networking.dart';
-import 'package:clean_architecture_getx/domain/model/pdf.dart';
-import 'package:clean_architecture_getx/domain/repository/main_repository.dart';
-import 'package:clean_architecture_getx/util/error_manager.dart';
-import 'package:clean_architecture_getx/util/resource.dart';
+import 'package:docu_fetch/data/datasource/local/database.dart';
+import 'package:docu_fetch/data/datasource/remote/response/pdf_dto.dart';
+import 'package:docu_fetch/data/networking/networking.dart';
+import 'package:docu_fetch/domain/model/pdf.dart';
+import 'package:docu_fetch/domain/repository/main_repository.dart';
+import 'package:docu_fetch/util/error_manager.dart';
+import 'package:docu_fetch/util/resource.dart';
 
 class MainRepositoryImpl implements MainRepository {
-  MainRepositoryImpl({required this.networking});
+  MainRepositoryImpl({required this.networking, required this.database});
 
   final Networking networking;
+
+  final AppDatabase database;
 
   @override
   Future<Resource<Pdf>> downloadPdf({required Pdf pdf}) async {
@@ -16,8 +19,7 @@ class MainRepositoryImpl implements MainRepository {
       try {
         await networking.download(url: pdf.url, path: pdf.path!);
         return Success(pdf);
-      } catch (e) {
-        print(e);
+      } catch (_) {
         return const Error(ErrorStatus.unexpected);
       }
     } else {
@@ -38,6 +40,36 @@ class MainRepositoryImpl implements MainRepository {
         return const Error(ErrorStatus.unexpected);
       }
     } else {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<List<Pdf>>> getLocalPdfList() async {
+    try {
+      final pdfList = await database.pdfDao.findAll();
+      return Success(pdfList);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<void>> insertLocalPdf(Pdf pdf) async {
+    try {
+      await database.pdfDao.insertPdf(pdf);
+      return const Success(null);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<void>> deleteLocalPdf(Pdf pdf) async {
+    try {
+      await database.pdfDao.deletePdf(pdf);
+      return const Success(null);
+    } catch (e) {
       return const Error(ErrorStatus.unexpected);
     }
   }

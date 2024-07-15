@@ -1,4 +1,4 @@
-import 'package:clean_architecture_getx/presentation/screen/home/home_controller.dart';
+import 'package:docu_fetch/presentation/screen/home/home_controller.dart';
 import 'package:get/get.dart';
 
 class HomeBinding extends Bindings {
@@ -7,6 +7,9 @@ class HomeBinding extends Bindings {
     Get.lazyPut<HomeController>(() => HomeController(
           downloadPdfUseCase: Get.find(),
           getPdfListUseCase: Get.find(),
+          insertLocalPdfUseCase: Get.find(),
+          getLocalPdfListUseCase: Get.find(),
+          deleteLocalPdfUseCase: Get.find(),
         ));
   }
 }

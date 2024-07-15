@@ -1,7 +1,7 @@
-import 'package:clean_architecture_getx/domain/model/pdf.dart';
-import 'package:clean_architecture_getx/domain/repository/main_repository.dart';
-import 'package:clean_architecture_getx/domain/usecase/usecase.dart';
-import 'package:clean_architecture_getx/util/resource.dart';
+import 'package:docu_fetch/domain/model/pdf.dart';
+import 'package:docu_fetch/domain/repository/main_repository.dart';
+import 'package:docu_fetch/domain/usecase/usecase.dart';
+import 'package:docu_fetch/util/resource.dart';
 
 class GetPdfListUseCase implements UseCase<Resource<List<Pdf>>, String> {
   final MainRepository mainRepository;

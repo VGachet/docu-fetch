@@ -1,8 +1,8 @@
-import 'package:clean_architecture_getx/presentation/screen/home/home_binding.dart';
-import 'package:clean_architecture_getx/presentation/screen/home/home_screen.dart';
-import 'package:clean_architecture_getx/presentation/screen/pdf_screen/pdf_screen.dart';
-import 'package:clean_architecture_getx/presentation/screen/splashscreen/splash_screen.dart';
-import 'package:clean_architecture_getx/presentation/screen/splashscreen/splash_screen_binding.dart';
+import 'package:docu_fetch/presentation/screen/home/home_binding.dart';
+import 'package:docu_fetch/presentation/screen/home/home_screen.dart';
+import 'package:docu_fetch/presentation/screen/pdf_screen/pdf_screen.dart';
+import 'package:docu_fetch/presentation/screen/splashscreen/splash_screen.dart';
+import 'package:docu_fetch/presentation/screen/splashscreen/splash_screen_binding.dart';
 import 'package:get/get.dart';
 
 mixin Routes {

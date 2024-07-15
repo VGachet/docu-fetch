@@ -1,4 +1,4 @@
-import 'package:clean_architecture_getx/domain/model/pdf.dart';
+import 'package:docu_fetch/domain/model/pdf.dart';
 import 'package:get/get.dart';
 
 class PdfController extends GetxController {

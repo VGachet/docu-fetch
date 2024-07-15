@@ -1,4 +1,4 @@
-import 'package:clean_architecture_getx/presentation/ui/theme/custom_colors.dart';
+import 'package:docu_fetch/presentation/ui/theme/custom_colors.dart';
 import 'package:flutter/material.dart';
 
 mixin CustomTheme {

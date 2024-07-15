@@ -1,4 +1,4 @@
-import 'package:clean_architecture_getx/util/error_manager.dart';
+import 'package:docu_fetch/util/error_manager.dart';
 
 abstract class Resource<T> {
   final T? data;

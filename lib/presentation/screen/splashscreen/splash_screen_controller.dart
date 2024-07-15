@@ -1,4 +1,4 @@
-import 'package:clean_architecture_getx/presentation/routes.dart';
+import 'package:docu_fetch/presentation/routes.dart';
 import 'package:get/get.dart';
 
 class SplashScreenController extends GetxController {

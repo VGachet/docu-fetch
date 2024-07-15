@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:clean_architecture_getx/presentation/screen/pdf_screen/pdf_controller.dart';
-import 'package:clean_architecture_getx/presentation/widget/page_container.dart';
+import 'package:docu_fetch/presentation/screen/pdf_screen/pdf_controller.dart';
+import 'package:docu_fetch/presentation/widget/page_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 

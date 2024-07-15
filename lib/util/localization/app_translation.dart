@@ -8,13 +8,11 @@ mixin AppTranslation {
 final Map<String, String> enUS = {
   'home': 'Home',
   'an_error_occured': 'An error occured',
-  'trending': 'Trending',
-  'coins': 'Coins',
+  'enter_url_json': 'Enter a JSON file URL',
 };
 
 final Map<String, String> fr = {
   'home': 'Accueil',
   'an_error_occured': 'Une erreur est survenue',
-  'trending': 'Tendance',
-  'coins': 'Jetons',
+  'enter_url_json': 'Entrez une URL de fichier JSON',
 };

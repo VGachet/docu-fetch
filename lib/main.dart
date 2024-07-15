@@ -1,7 +1,7 @@
-import 'package:clean_architecture_getx/di/injector.dart';
-import 'package:clean_architecture_getx/presentation/routes.dart';
-import 'package:clean_architecture_getx/presentation/ui/theme/custom_theme.dart';
-import 'package:clean_architecture_getx/util/localization/app_translation.dart';
+import 'package:docu_fetch/di/injector.dart';
+import 'package:docu_fetch/presentation/routes.dart';
+import 'package:docu_fetch/presentation/ui/theme/custom_theme.dart';
+import 'package:docu_fetch/util/localization/app_translation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -12,11 +12,11 @@ Future<void> main() async {
   //Dependencies injection
   await initDependencies();
 
-  runApp(MyApp(key: UniqueKey()));
+  runApp(DocuFetchApp(key: UniqueKey()));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class DocuFetchApp extends StatelessWidget {
+  const DocuFetchApp({super.key});
 
   @override
   Widget build(BuildContext context) {

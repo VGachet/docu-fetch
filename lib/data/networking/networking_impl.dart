@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:clean_architecture_getx/data/networking/networking.dart';
+import 'package:docu_fetch/data/networking/networking.dart';
 import 'package:dio/dio.dart';
 
 class NetworkingImpl implements Networking {

@@ -1,4 +1,9 @@
+import 'package:floor/floor.dart';
+
+@entity
 class Pdf {
+  @primaryKey
+  final String? id;
   final String title;
   final String? path;
   final String url;
@@ -7,13 +12,15 @@ class Pdf {
   final int lastPageOpened = 0;
 
   Pdf(
-      {required this.title,
+      {this.id,
+      required this.title,
       this.path,
       required this.url,
       required this.version,
       required this.description});
 
   Pdf copyWith({
+    String? id,
     String? title,
     String? path,
     String? url,
@@ -22,6 +29,7 @@ class Pdf {
     int? lastPageOpened,
   }) =>
       Pdf(
+          id: id ?? this.id,
           title: title ?? this.title,
           path: path ?? this.path,
           url: url ?? this.url,
