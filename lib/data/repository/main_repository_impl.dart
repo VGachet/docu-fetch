@@ -73,4 +73,15 @@ class MainRepositoryImpl implements MainRepository {
       return const Error(ErrorStatus.unexpected);
     }
   }
+
+  @override
+  Future<Resource<void>> updateLastPageOpened(
+      {required int lastPage, required String id}) async {
+    try {
+      await database.pdfDao.updateLastPageOpened(lastPage, id);
+      return const Success(null);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
 }

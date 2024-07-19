@@ -7,9 +7,10 @@ class Pdf {
   final String title;
   final String? path;
   final String url;
+
   final double version;
   final String description;
-  final int lastPageOpened = 0;
+  int lastPageOpened = 0;
 
   Pdf(
       {this.id,

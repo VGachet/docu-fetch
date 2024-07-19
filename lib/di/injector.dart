@@ -9,6 +9,7 @@ import 'package:docu_fetch/domain/usecase/download_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_local_pdf_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_pdf_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_pdf_use_case.dart';
+import 'package:docu_fetch/domain/usecase/update_last_page_opened_use_case.dart';
 import 'package:docu_fetch/presentation/main_controller.dart';
 import 'package:get/get.dart';
 
@@ -44,5 +45,7 @@ Future<void> initDependencies() async {
   Get.lazyPut(() => GetLocalPdfListUseCase(mainRepository: Get.find()),
       fenix: true);
   Get.lazyPut(() => DeleteLocalPdfUseCase(mainRepository: Get.find()),
+      fenix: true);
+  Get.lazyPut(() => UpdateLastPageOpenedUseCase(mainRepository: Get.find()),
       fenix: true);
 }

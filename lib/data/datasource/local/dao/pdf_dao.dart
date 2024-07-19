@@ -14,4 +14,7 @@ abstract class PdfDao {
 
   @delete
   Future<void> deletePdf(Pdf pdf);
+
+  @Query('UPDATE Pdf SET lastPageOpened = :lastPage WHERE id = :id')
+  Future<void> updateLastPageOpened(int lastPage, String id);
 }

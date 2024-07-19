@@ -181,6 +181,16 @@ class _$PdfDao extends PdfDao {
   }
 
   @override
+  Future<void> updateLastPageOpened(
+    int lastPage,
+    String id,
+  ) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE Pdf SET lastPageOpened = ?1 WHERE id = ?2',
+        arguments: [lastPage, id]);
+  }
+
+  @override
   Future<void> insertPdf(Pdf pdf) async {
     await _pdfInsertionAdapter.insert(pdf, OnConflictStrategy.abort);
   }
