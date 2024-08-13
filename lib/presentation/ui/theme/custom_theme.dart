@@ -7,15 +7,13 @@ mixin CustomTheme {
         colorScheme: const ColorScheme(
           brightness: Brightness.light,
           primary: CustomColors.colorWhite,
-          secondary: CustomColors.colorBlue,
-          background: CustomColors.colorWhite,
+          secondary: CustomColors.colorGreyLight,
+          surface: CustomColors.colorWhite,
           error: CustomColors.colorWhite,
-          onBackground: CustomColors.colorBlack,
           onError: CustomColors.colorRedStrong,
           onPrimary: CustomColors.colorBlack,
-          onSecondary: CustomColors.colorWhite,
-          surface: CustomColors.colorBlue,
-          onSurface: CustomColors.colorWhite,
+          onSecondary: CustomColors.colorBlack,
+          onSurface: CustomColors.colorBlack,
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: CustomColors.colorWhite,
@@ -23,28 +21,50 @@ mixin CustomTheme {
           unselectedItemColor: CustomColors.colorInactive,
         ),
         progressIndicatorTheme:
-            const ProgressIndicatorThemeData(color: CustomColors.colorBlue),
+            const ProgressIndicatorThemeData(color: CustomColors.colorBlack),
       );
 
   //Theme applied when the device is in dark mode
   static ThemeData get dark => ThemeData(
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,
-          primary: CustomColors.colorBlue,
-          secondary: CustomColors.colorWhite,
-          background: CustomColors.colorBlue,
-          error: CustomColors.colorWhite,
-          onBackground: CustomColors.colorWhite,
+          primary: CustomColors.colorBlack,
+          secondary: CustomColors.colorGreyLight,
+          surface: CustomColors.colorBlack,
+          error: CustomColors.colorBlack,
           onError: CustomColors.colorRedStrong,
           onPrimary: CustomColors.colorWhite,
-          onSecondary: CustomColors.colorBlue,
-          surface: CustomColors.colorWhite,
-          onSurface: CustomColors.colorBlack,
+          onSecondary: CustomColors.colorWhite,
+          onSurface: CustomColors.colorWhite,
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: CustomColors.colorBlue,
+          backgroundColor: CustomColors.colorBlack,
           selectedItemColor: CustomColors.colorWhite,
           unselectedItemColor: CustomColors.colorInactive,
         ),
+        progressIndicatorTheme:
+            const ProgressIndicatorThemeData(color: CustomColors.colorWhite),
+      );
+
+  static TextStyle get title => const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: CustomColors.colorBlack,
+      );
+
+  static TextStyle get subtitle => const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: CustomColors.colorBlack,
+      );
+
+  static TextStyle get body => const TextStyle(
+        fontSize: 14,
+        color: CustomColors.colorBlack,
+      );
+
+  static TextStyle get bodyRed => const TextStyle(
+        fontSize: 14,
+        color: CustomColors.colorRed,
       );
 }

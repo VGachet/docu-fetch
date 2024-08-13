@@ -1,5 +1,6 @@
 import 'package:docu_fetch/presentation/screen/home/home_binding.dart';
 import 'package:docu_fetch/presentation/screen/home/home_screen.dart';
+import 'package:docu_fetch/presentation/screen/pdf_screen/pdf_binding.dart';
 import 'package:docu_fetch/presentation/screen/pdf_screen/pdf_screen.dart';
 import 'package:docu_fetch/presentation/screen/splashscreen/splash_screen.dart';
 import 'package:docu_fetch/presentation/screen/splashscreen/splash_screen_binding.dart';
@@ -26,6 +27,7 @@ mixin Routes {
     GetPage(
       name: pdf,
       page: () => PdfScreen(),
+      binding: PdfBinding(),
       transition: Transition.cupertino,
     ),
   ];

@@ -75,6 +75,7 @@ class HomeController extends GetxController {
     } else {
       print('get PDF List Error');
     }
+    Get.back(closeOverlays: true);
   }
 
   Future<void> loadLocalPdfList() async {
@@ -97,4 +98,6 @@ class HomeController extends GetxController {
       print('delete Local PDF Error');
     }
   }
+
+  void pickPdfFromDevice() {}
 }

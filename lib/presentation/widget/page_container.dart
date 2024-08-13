@@ -10,12 +10,12 @@ import 'package:get/get.dart';
 
 class PageContainer extends StatelessWidget {
   PageContainer(
-      {Key? key,
+      {super.key,
       required this.body,
       this.bottomNavigationBar,
       this.backgroundColor,
-      this.hideLoadingOverlay})
-      : super(key: key);
+      this.hideLoadingOverlay,
+      this.floatingActionButton});
 
   final _mainController = Get.find<MainController>();
 
@@ -23,23 +23,26 @@ class PageContainer extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final Color? backgroundColor;
   final bool? hideLoadingOverlay;
+  final Widget? floatingActionButton;
 
   @override
   Widget build(BuildContext context) =>
       Stack(fit: StackFit.expand, children: <Widget>[
         Scaffold(
-            resizeToAvoidBottomInset: false,
-            bottomNavigationBar: bottomNavigationBar,
-            //This background color is displayed in the status bar and bottom bar of iOS devices
-            backgroundColor: backgroundColor,
-            //AnnotatedRegion is used to display the background color & the status bar and navigation bar of Android devices
-            body: AnnotatedRegion<SystemUiOverlayStyle>(
-              value: SystemUiOverlayStyle(
-                  statusBarColor: backgroundColor ?? CustomColors.colorBlue,
-                  systemNavigationBarColor:
-                      backgroundColor ?? CustomColors.colorBlue),
-              child: SafeArea(child: body),
-            )),
+          resizeToAvoidBottomInset: false,
+          bottomNavigationBar: bottomNavigationBar,
+          //This background color is displayed in the status bar and bottom bar of iOS devices
+          backgroundColor: backgroundColor,
+          //AnnotatedRegion is used to display the background color & the status bar and navigation bar of Android devices
+          body: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+                statusBarColor: backgroundColor ?? CustomColors.colorGreyLight,
+                systemNavigationBarColor:
+                    backgroundColor ?? CustomColors.colorGreyLight),
+            child: SafeArea(child: body),
+          ),
+          floatingActionButton: floatingActionButton,
+        ),
         Obx(() => _mainController.isLoadingCanStop.value ||
                 hideLoadingOverlay == true
             ? const SizedBox()

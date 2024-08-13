@@ -11,6 +11,7 @@ import 'package:docu_fetch/domain/usecase/get_pdf_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/update_last_page_opened_use_case.dart';
 import 'package:docu_fetch/presentation/main_controller.dart';
+import 'package:docu_fetch/presentation/widget/expandable_fab/expandable_fab_controller.dart';
 import 'package:get/get.dart';
 
 Future<void> initDependencies() async {
@@ -35,6 +36,9 @@ Future<void> initDependencies() async {
   Get.lazyPut<MainRepository>(
       () => MainRepositoryImpl(networking: Get.find(), database: Get.find()),
       fenix: true);
+
+  //Widgets
+  Get.lazyPut(() => ExpandableFabController(), fenix: true);
 
   //Use cases
   Get.lazyPut(() => DownloadPdfUseCase(mainRepository: Get.find()),
