@@ -10,11 +10,11 @@ abstract class PdfDao {
   Stream<Pdf?> findPdfById(int id);
 
   @insert
-  Future<void> insertPdf(Pdf pdf);
+  Future<int> insertPdf(Pdf pdf);
 
   @delete
-  Future<void> deletePdf(Pdf pdf);
+  Future<int> deletePdf(Pdf pdf);
 
   @Query('UPDATE Pdf SET lastPageOpened = :lastPage WHERE id = :id')
-  Future<void> updateLastPageOpened(int lastPage, String id);
+  Future<void> updateLastPageOpened(int lastPage, int id);
 }

@@ -2,8 +2,8 @@ import 'package:floor/floor.dart';
 
 @entity
 class Pdf {
-  @primaryKey
-  final String? id;
+  @PrimaryKey(autoGenerate: true)
+  final int? id;
   final String title;
   final String? path;
   final String url;
@@ -21,7 +21,7 @@ class Pdf {
       required this.description});
 
   Pdf copyWith({
-    String? id,
+    int? id,
     String? title,
     String? path,
     String? url,

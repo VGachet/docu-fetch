@@ -5,10 +5,13 @@ import 'package:docu_fetch/data/networking/networking_impl.dart';
 import 'package:docu_fetch/data/repository/main_repository_impl.dart';
 import 'package:docu_fetch/domain/repository/main_repository.dart';
 import 'package:docu_fetch/domain/usecase/delete_pdf_use_case.dart';
+import 'package:docu_fetch/domain/usecase/delete_repository_use_case.dart';
 import 'package:docu_fetch/domain/usecase/download_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_local_pdf_list_use_case.dart';
+import 'package:docu_fetch/domain/usecase/get_local_repository_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_pdf_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_pdf_use_case.dart';
+import 'package:docu_fetch/domain/usecase/insert_local_repository_use_case.dart';
 import 'package:docu_fetch/domain/usecase/update_last_page_opened_use_case.dart';
 import 'package:docu_fetch/presentation/main_controller.dart';
 import 'package:docu_fetch/presentation/widget/expandable_fab/expandable_fab_controller.dart';
@@ -51,5 +54,11 @@ Future<void> initDependencies() async {
   Get.lazyPut(() => DeleteLocalPdfUseCase(mainRepository: Get.find()),
       fenix: true);
   Get.lazyPut(() => UpdateLastPageOpenedUseCase(mainRepository: Get.find()),
+      fenix: true);
+  Get.lazyPut(() => InsertLocalRepositoryUseCase(mainRepository: Get.find()),
+      fenix: true);
+  Get.lazyPut(() => GetLocalRepositoryListUseCase(mainRepository: Get.find()),
+      fenix: true);
+  Get.lazyPut(() => DeleteLocalRepositoryUseCase(mainRepository: Get.find()),
       fenix: true);
 }

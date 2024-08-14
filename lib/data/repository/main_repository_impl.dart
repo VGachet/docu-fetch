@@ -2,6 +2,7 @@ import 'package:docu_fetch/data/datasource/local/database.dart';
 import 'package:docu_fetch/data/datasource/remote/response/pdf_dto.dart';
 import 'package:docu_fetch/data/networking/networking.dart';
 import 'package:docu_fetch/domain/model/pdf.dart';
+import 'package:docu_fetch/domain/model/repository.dart';
 import 'package:docu_fetch/domain/repository/main_repository.dart';
 import 'package:docu_fetch/util/error_manager.dart';
 import 'package:docu_fetch/util/resource.dart';
@@ -55,9 +56,30 @@ class MainRepositoryImpl implements MainRepository {
   }
 
   @override
-  Future<Resource<void>> insertLocalPdf(Pdf pdf) async {
+  Future<Resource<int>> insertLocalPdf(Pdf pdf) async {
     try {
-      await database.pdfDao.insertPdf(pdf);
+      final int pdfId = await database.pdfDao.insertPdf(pdf);
+      return Success(pdfId);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<int>> deleteLocalPdf(Pdf pdf) async {
+    try {
+      final int pdfId = await database.pdfDao.deletePdf(pdf);
+      return Success(pdfId);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<void>> updateLastPageOpened(
+      {required int lastPage, required int id}) async {
+    try {
+      await database.pdfDao.updateLastPageOpened(lastPage, id);
       return const Success(null);
     } catch (_) {
       return const Error(ErrorStatus.unexpected);
@@ -65,21 +87,32 @@ class MainRepositoryImpl implements MainRepository {
   }
 
   @override
-  Future<Resource<void>> deleteLocalPdf(Pdf pdf) async {
+  Future<Resource<int>> insertLocalRepository(Repository repository) async {
     try {
-      await database.pdfDao.deletePdf(pdf);
-      return const Success(null);
-    } catch (e) {
+      final repositoryId =
+          await database.repositoryDao.insertRepository(repository);
+      return Success(repositoryId);
+    } catch (_) {
       return const Error(ErrorStatus.unexpected);
     }
   }
 
   @override
-  Future<Resource<void>> updateLastPageOpened(
-      {required int lastPage, required String id}) async {
+  Future<Resource<List<Repository>>> getLocalRepositoryList() async {
     try {
-      await database.pdfDao.updateLastPageOpened(lastPage, id);
-      return const Success(null);
+      final repositoryList = await database.repositoryDao.findAll();
+      return Success(repositoryList);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<int>> deleteLocalRepository(Repository repository) async {
+    try {
+      final int repositoryId =
+          await database.repositoryDao.deleteRepository(repository);
+      return Success(repositoryId);
     } catch (_) {
       return const Error(ErrorStatus.unexpected);
     }

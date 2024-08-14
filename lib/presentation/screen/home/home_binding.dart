@@ -10,6 +10,9 @@ class HomeBinding extends Bindings {
           insertLocalPdfUseCase: Get.find(),
           getLocalPdfListUseCase: Get.find(),
           deleteLocalPdfUseCase: Get.find(),
+          insertLocalRepositoryUseCase: Get.find(),
+          getLocalRepositoryListUseCase: Get.find(),
+          deleteLocalRepositoryUseCase: Get.find(),
         ));
   }
 }

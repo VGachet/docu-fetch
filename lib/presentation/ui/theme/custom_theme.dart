@@ -6,10 +6,10 @@ mixin CustomTheme {
   static ThemeData get light => ThemeData(
         colorScheme: const ColorScheme(
           brightness: Brightness.light,
-          primary: CustomColors.colorWhite,
+          primary: CustomColors.colorBlack,
           secondary: CustomColors.colorGreyLight,
           surface: CustomColors.colorWhite,
-          error: CustomColors.colorWhite,
+          error: CustomColors.colorRedStrong,
           onError: CustomColors.colorRedStrong,
           onPrimary: CustomColors.colorBlack,
           onSecondary: CustomColors.colorBlack,
@@ -28,7 +28,7 @@ mixin CustomTheme {
   static ThemeData get dark => ThemeData(
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,
-          primary: CustomColors.colorBlack,
+          primary: CustomColors.colorWhite,
           secondary: CustomColors.colorGreyLight,
           surface: CustomColors.colorBlack,
           error: CustomColors.colorBlack,
@@ -61,6 +61,11 @@ mixin CustomTheme {
   static TextStyle get body => const TextStyle(
         fontSize: 14,
         color: CustomColors.colorBlack,
+      );
+
+  static TextStyle get bodyDisabled => const TextStyle(
+        fontSize: 14,
+        color: CustomColors.colorInactive,
       );
 
   static TextStyle get bodyRed => const TextStyle(

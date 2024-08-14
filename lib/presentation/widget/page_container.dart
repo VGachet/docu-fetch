@@ -32,7 +32,7 @@ class PageContainer extends StatelessWidget {
           resizeToAvoidBottomInset: false,
           bottomNavigationBar: bottomNavigationBar,
           //This background color is displayed in the status bar and bottom bar of iOS devices
-          backgroundColor: backgroundColor,
+          backgroundColor: backgroundColor ?? CustomColors.colorGreyLight,
           //AnnotatedRegion is used to display the background color & the status bar and navigation bar of Android devices
           body: AnnotatedRegion<SystemUiOverlayStyle>(
             value: SystemUiOverlayStyle(

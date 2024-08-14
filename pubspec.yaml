@@ -1,5 +1,5 @@
 name: docu_fetch
-description: This is a Flutter base project using Clean Architecture, GetX for state management and reactivity and Retrofit as an HTTP client
+description: Flutter mobile app for fetching and displaying documents from a server.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -49,6 +49,10 @@ dependencies:
   floor: ^1.5.0
   #https://pub.dev/packages/uuid
   uuid: ^4.4.2
+  #https://pub.dev/packages/flutter_inset_box_shadow
+  flutter_inset_box_shadow: ^1.0.8
+  #https://pub.dev/packages/fluttertoast
+  fluttertoast: ^8.2.7
 
 dev_dependencies:
   flutter_test:

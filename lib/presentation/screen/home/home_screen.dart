@@ -1,9 +1,12 @@
 import 'package:docu_fetch/presentation/routes.dart';
 import 'package:docu_fetch/presentation/screen/home/home_controller.dart';
+import 'package:docu_fetch/presentation/ui/lower_case_input_formatter.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_colors.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_theme.dart';
 import 'package:docu_fetch/presentation/widget/expandable_fab/expandable_fab.dart';
+import 'package:docu_fetch/presentation/widget/neumorphic_button.dart';
+import 'package:docu_fetch/presentation/widget/neumorphic_list_tile.dart';
 import 'package:docu_fetch/presentation/widget/page_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,6 +23,7 @@ class HomeScreen extends StatelessWidget {
         children: {
           'add_pdf_from_url'.tr: showUrlFormDialog,
           'add_pdf_from_file'.tr: controller.pickPdfFromDevice,
+          'repository_list'.tr: showRepositoryListDialog,
         },
       ),
       body: Obx(() => controller.pdfList.isEmpty
@@ -40,110 +44,144 @@ class HomeScreen extends StatelessWidget {
                 children: controller.pdfList
                     .map((pdf) => Padding(
                         padding: const EdgeInsets.all(CustomMargins.margin8),
-                        child: Material(
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            clipBehavior: Clip.antiAlias,
-                            child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: CustomMargins.margin8),
-                                child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: CustomMargins.margin16),
-                                    title: Text(pdf.title,
-                                        style: const TextStyle(
-                                            color: Colors.black)),
-                                    trailing: Material(
-                                        elevation: 4,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        clipBehavior: Clip.antiAlias,
-                                        child: IconButton(
-                                            icon: Icon(
-                                              Icons.delete_outline,
-                                              color: Colors.black,
-                                              shadows: [
-                                                Shadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.3),
-                                                    blurRadius: 10)
-                                              ],
-                                            ),
-                                            onPressed: () async {
-                                              await controller
-                                                  .deleteLocalPdf(pdf);
-                                            })),
-                                    onTap: () {
-                                      Get.toNamed(Routes.pdf, arguments: pdf);
-                                    })))))
+                        child: NeumorphicListTile(
+                            title: pdf.title,
+                            trailing: NeumorphicButton(
+                              icon: Icons.delete,
+                              onTap: () async {
+                                await controller.deleteLocalPdf(pdf);
+                              },
+                            ),
+                            onTap: () {
+                              Get.toNamed(Routes.pdf, arguments: pdf);
+                            })))
                     .toList(),
               ))));
-
-  void displayDownloadProgressPopup() {
-    showDialog(
-      barrierDismissible: false,
-      context: Get.overlayContext!,
-      builder: (context) => AlertDialog(
-        title: Text('downloading_pdf'.tr,
-            style: CustomTheme.body, textAlign: TextAlign.center),
-        content: SizedBox(
-            width: Get.width,
-            height: 100,
-            child: Center(
-                child: Stack(children: [
-              Center(
-                  child: SizedBox(
-                      height: 60,
-                      width: 60,
-                      child: Obx(() => CircularProgressIndicator(
-                            value: controller.downloadProgress.value,
-                          )))),
-              Center(
-                  child: Obx(() => Text(
-                        '${(controller.downloadProgress.value * 100).round()}%',
-                        style: CustomTheme.body,
-                        textAlign: TextAlign.center,
-                      ))),
-            ]))),
-      ),
-    );
-  }
 
   void showUrlFormDialog() {
     showDialog(
       context: Get.overlayContext!,
       builder: (context) => AlertDialog(
-        content: TextField(
-          style: CustomTheme.body,
-          controller: controller.pdfUrlController,
-          decoration: InputDecoration(
-            hintText: 'enter_url_json'.tr,
-            labelText: 'enter_url_json'.tr,
-            border: const OutlineInputBorder(),
-            labelStyle: CustomTheme.body,
-          ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.all(CustomMargins.margin16),
+        elevation: 4,
+        backgroundColor: CustomColors.colorGreyLight,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              style: CustomTheme.body,
+              controller: controller.repoNameController,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                labelText: 'enter_repo_name'.tr,
+                hintText: 'repo_name_example'.tr,
+                border: const OutlineInputBorder(),
+                labelStyle: CustomTheme.body,
+                enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+              ),
+            ),
+            const SizedBox(height: CustomMargins.margin16),
+            Obx(
+              () => TextField(
+                style: CustomTheme.body,
+                controller: controller.repoJsonUrlController,
+                textCapitalization: TextCapitalization.none,
+                keyboardType: TextInputType.url,
+                decoration: InputDecoration(
+                  labelText: 'enter_json_repo_url'.tr,
+                  hintText: 'json_repo_url_example'.tr,
+                  border: const OutlineInputBorder(),
+                  labelStyle: CustomTheme.body,
+                  errorText: controller.repoUrlFieldError.value,
+                  enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: CustomColors.colorBlack)),
+                  disabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: CustomColors.colorBlack)),
+                  focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: CustomColors.colorBlack)),
+                ),
+                inputFormatters: [LowerCaseTextFormatter()],
+              ),
+            ),
+          ],
         ),
         actions: [
-          TextButton(
-            onPressed: () {
+          NeumorphicButton(
+            onTap: () {
+              controller.repoJsonUrlController.clear();
+              controller.repoNameController.clear();
               Get.back();
             },
-            child: Text('cancel'.tr, style: CustomTheme.bodyRed),
+            text: 'cancel'.tr,
           ),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              displayDownloadProgressPopup();
-              controller.downloadPdf();
-            },
-            child: Text('validate'.tr, style: CustomTheme.body),
-          ),
+          Obx(() => NeumorphicButton(
+                isDisabled: controller.isValidateButtonDisabled.value,
+                onTap: () async {
+                  Get.back();
+                  final bool isRepoAdded = await controller.insertRepository();
+                  if (isRepoAdded) {
+                    await controller.downloadPdf(
+                        repositoryUrl: controller.repoJsonUrlController.text);
+                  }
+                },
+                text: 'validate'.tr,
+              )),
         ],
       ),
     );
   }
 
   void showDeleteConfirmDialog() {}
+
+  void showRepositoryListDialog() {
+    showDialog(
+      context: Get.overlayContext!,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 0, vertical: CustomMargins.margin8),
+        elevation: 4,
+        backgroundColor: CustomColors.colorGreyLight,
+        content: SizedBox(
+          height: 300,
+          width: Get.width,
+          child: Obx(
+            () => ListView.builder(
+              shrinkWrap: true,
+              itemCount: controller.repositoryList.length,
+              itemBuilder: (context, index) {
+                final repo = controller.repositoryList[index];
+                return NeumorphicListTile(
+                  title: repo.name,
+                  subtitle: repo.url,
+                  onTap: () {
+                    Get.back();
+                    controller.downloadPdf(repositoryUrl: repo.url);
+                  },
+                  trailing: NeumorphicButton(
+                    icon: Icons.delete,
+                    onTap: () async {
+                      await controller.deleteLocalRepository(repo);
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        actions: [
+          NeumorphicButton(
+            onTap: Get.back,
+            text: 'close'.tr,
+          ),
+        ],
+      ),
+    );
+  }
 }

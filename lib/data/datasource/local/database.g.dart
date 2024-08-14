@@ -74,6 +74,8 @@ class _$AppDatabase extends AppDatabase {
 
   PdfDao? _pdfDaoInstance;
 
+  RepositoryDao? _repositoryDaoInstance;
+
   Future<sqflite.Database> open(
     String path,
     List<Migration> migrations, [
@@ -96,7 +98,9 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` TEXT, `title` TEXT NOT NULL, `path` TEXT, `url` TEXT NOT NULL, `version` REAL NOT NULL, `description` TEXT NOT NULL, `lastPageOpened` INTEGER NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `path` TEXT, `url` TEXT NOT NULL, `version` REAL NOT NULL, `description` TEXT NOT NULL, `lastPageOpened` INTEGER NOT NULL)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `Repository` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `url` TEXT NOT NULL, `name` TEXT)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -107,6 +111,11 @@ class _$AppDatabase extends AppDatabase {
   @override
   PdfDao get pdfDao {
     return _pdfDaoInstance ??= _$PdfDao(database, changeListener);
+  }
+
+  @override
+  RepositoryDao get repositoryDao {
+    return _repositoryDaoInstance ??= _$RepositoryDao(database, changeListener);
   }
 }
 
@@ -157,7 +166,7 @@ class _$PdfDao extends PdfDao {
   Future<List<Pdf>> findAll() async {
     return _queryAdapter.queryList('SELECT * FROM Pdf',
         mapper: (Map<String, Object?> row) => Pdf(
-            id: row['id'] as String?,
+            id: row['id'] as int?,
             title: row['title'] as String,
             path: row['path'] as String?,
             url: row['url'] as String,
@@ -169,7 +178,7 @@ class _$PdfDao extends PdfDao {
   Stream<Pdf?> findPdfById(int id) {
     return _queryAdapter.queryStream('SELECT * FROM Pdf WHERE id = ?1',
         mapper: (Map<String, Object?> row) => Pdf(
-            id: row['id'] as String?,
+            id: row['id'] as int?,
             title: row['title'] as String,
             path: row['path'] as String?,
             url: row['url'] as String,
@@ -183,7 +192,7 @@ class _$PdfDao extends PdfDao {
   @override
   Future<void> updateLastPageOpened(
     int lastPage,
-    String id,
+    int id,
   ) async {
     await _queryAdapter.queryNoReturn(
         'UPDATE Pdf SET lastPageOpened = ?1 WHERE id = ?2',
@@ -191,12 +200,81 @@ class _$PdfDao extends PdfDao {
   }
 
   @override
-  Future<void> insertPdf(Pdf pdf) async {
-    await _pdfInsertionAdapter.insert(pdf, OnConflictStrategy.abort);
+  Future<int> insertPdf(Pdf pdf) {
+    return _pdfInsertionAdapter.insertAndReturnId(
+        pdf, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deletePdf(Pdf pdf) async {
-    await _pdfDeletionAdapter.delete(pdf);
+  Future<int> deletePdf(Pdf pdf) {
+    return _pdfDeletionAdapter.deleteAndReturnChangedRows(pdf);
+  }
+}
+
+class _$RepositoryDao extends RepositoryDao {
+  _$RepositoryDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
+        _repositoryInsertionAdapter = InsertionAdapter(
+            database,
+            'Repository',
+            (Repository item) => <String, Object?>{
+                  'id': item.id,
+                  'url': item.url,
+                  'name': item.name
+                },
+            changeListener),
+        _repositoryDeletionAdapter = DeletionAdapter(
+            database,
+            'Repository',
+            ['id'],
+            (Repository item) => <String, Object?>{
+                  'id': item.id,
+                  'url': item.url,
+                  'name': item.name
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<Repository> _repositoryInsertionAdapter;
+
+  final DeletionAdapter<Repository> _repositoryDeletionAdapter;
+
+  @override
+  Future<List<Repository>> findAll() async {
+    return _queryAdapter.queryList('SELECT * FROM Repository',
+        mapper: (Map<String, Object?> row) => Repository(
+            url: row['url'] as String,
+            id: row['id'] as int?,
+            name: row['name'] as String?));
+  }
+
+  @override
+  Stream<Repository?> findPdfById(int id) {
+    return _queryAdapter.queryStream('SELECT * FROM Repository WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => Repository(
+            url: row['url'] as String,
+            id: row['id'] as int?,
+            name: row['name'] as String?),
+        arguments: [id],
+        queryableName: 'Repository',
+        isView: false);
+  }
+
+  @override
+  Future<int> insertRepository(Repository repository) {
+    return _repositoryInsertionAdapter.insertAndReturnId(
+        repository, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deleteRepository(Repository repository) {
+    return _repositoryDeletionAdapter.deleteAndReturnChangedRows(repository);
   }
 }
