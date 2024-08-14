@@ -116,21 +116,17 @@ class HomeController extends GetxController
               await insertLocalPdfUseCase(downloadedPdf);
 
           if (insertLocalPdfResource is Success) {
-            pdfList.add(downloadedPdf);
-            pdfList.add(downloadedPdf);
+            await loadLocalPdfList();
           } else {
-            Navigator.pop(Get.overlayContext!);
             print('insert PDF Error');
           }
         } else {
-          Navigator.pop(Get.overlayContext!);
           print('download PDF Error');
         }
       }
     } else {
-      Navigator.pop(Get.overlayContext!);
       Fluttertoast.showToast(
-          msg: 'no_json_found_repo'.tr,
+          msg: 'error_downloading_files'.tr,
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 2,
@@ -138,6 +134,8 @@ class HomeController extends GetxController
           textColor: Colors.white,
           fontSize: 16.0);
     }
+
+    Navigator.pop(Get.overlayContext!);
 
     repoJsonUrlController.clear();
     repoNameController.clear();

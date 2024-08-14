@@ -25,6 +25,7 @@ final Map<String, String> enUS = {
   'repository_list': 'Your repository list',
   'close': 'Close',
   'delete_repo_error': 'An error occured while deleting the repository',
+  'error_downloading_files': 'Error downloading files',
 };
 
 final Map<String, String> fr = {
@@ -48,4 +49,5 @@ final Map<String, String> fr = {
   'close': 'Fermer',
   'delete_repo_error':
       'Une erreur est survenue lors de la suppression du dépôt',
+  'error_downloading_files': 'Erreur lors du téléchargement des fichiers',
 };
