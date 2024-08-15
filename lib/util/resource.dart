@@ -12,6 +12,6 @@ class Success<T> extends Resource<T> {
 }
 
 class Error<T> extends Resource<T> {
-  const Error(ErrorStatus errorStatus, {T? data})
-      : super(errorStatus: errorStatus, data: data);
+  const Error(ErrorStatus errorStatus, {super.data})
+      : super(errorStatus: errorStatus);
 }

@@ -46,6 +46,8 @@ class HomeScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(CustomMargins.margin8),
                         child: NeumorphicListTile(
                             title: pdf.title,
+                            subtitle: 'version'
+                                .trParams({'version': '${pdf.version}'}),
                             trailing: NeumorphicButton(
                               icon: Icons.delete,
                               onTap: () async {

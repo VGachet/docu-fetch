@@ -26,6 +26,16 @@ final Map<String, String> enUS = {
   'close': 'Close',
   'delete_repo_error': 'An error occured while deleting the repository',
   'error_downloading_files': 'Error downloading files',
+  'error_downloading_pdf': 'Error while downloading the PDF: @pdfTitle',
+  'error_saving_pdf': 'Error while saving the PDF: @pdfTitle',
+  'error_retrieving_pdf_list': 'Error retrieving the PDF list',
+  'error_deleting_pdf': 'Error deleting the PDF: @pdfTitle',
+  'error_saving_repository': 'Error saving the repository',
+  'error_retrieving_repository': 'Error retrieving the repository list',
+  'pdf_already_downloaded':
+      '@pdfTitle is already downloaded (version: @pdfVersion)',
+  'downloading': '@currentDownloadedSize mo / @totalSize mo',
+  'version': 'Version: @version',
 };
 
 final Map<String, String> fr = {
@@ -50,4 +60,16 @@ final Map<String, String> fr = {
   'delete_repo_error':
       'Une erreur est survenue lors de la suppression du dépôt',
   'error_downloading_files': 'Erreur lors du téléchargement des fichiers',
+  'error_downloading_pdf': 'Erreur lors du téléchargement du PDF: @pdfTitle',
+  'error_saving_pdf': 'Erreur lors de la sauvegarde du PDF: @pdfTitle',
+  'error_retrieving_pdf_list':
+      'Erreur lors de la récupération de la liste des PDF',
+  'error_deleting_pdf': 'Erreur lors de la suppression du PDF: @pdfTitle',
+  'error_saving_repository': 'Erreur lors de la sauvegarde du dépôt',
+  'error_retrieving_repository':
+      'Erreur lors de la récupération de la liste des dépôts',
+  'pdf_already_downloaded':
+      '@pdfTitle est déjà téléchargé (version: @pdfVersion)',
+  'downloading': '@currentDownloadedSize mo / @totalSize mo',
+  'version': 'Version: @version',
 };

@@ -3,7 +3,7 @@ import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
 import 'package:flutter/material.dart';
 
 class NeumorphicListTile extends StatelessWidget {
-  NeumorphicListTile({
+  const NeumorphicListTile({
     super.key,
     this.title,
     this.subtitle,

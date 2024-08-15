@@ -14,7 +14,7 @@ class ErrorCode {
   static const int internalServerError = 500;
 }
 
-ErrorStatus getErrorStatusByDioError(DioError error) {
+ErrorStatus getErrorStatusByDioError(DioException error) {
   if (error.response != null &&
       error.response!.data != null &&
       error.response!.statusCode != null &&
