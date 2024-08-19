@@ -16,9 +16,13 @@ class MainRepositoryImpl implements MainRepository {
 
   @override
   Future<Resource<Pdf>> downloadPdf({required Pdf pdf}) async {
-    if (pdf.url.split('.').last == 'pdf' && pdf.path != null) {
+    if (pdf.url == null) {
+      return const Error(ErrorStatus.unexpected);
+    }
+
+    if (pdf.url!.split('.').last == 'pdf' && pdf.path != null) {
       try {
-        await networking.download(url: pdf.url, path: pdf.path!);
+        await networking.download(url: pdf.url!, path: pdf.path!);
         return Success(pdf);
       } catch (_) {
         return const Error(ErrorStatus.unexpected);

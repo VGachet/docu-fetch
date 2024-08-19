@@ -98,7 +98,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `renamedTitle` TEXT, `path` TEXT, `url` TEXT NOT NULL, `version` REAL NOT NULL, `description` TEXT NOT NULL, `lastPageOpened` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `renamedTitle` TEXT, `path` TEXT, `url` TEXT, `version` REAL NOT NULL, `description` TEXT, `lastPageOpened` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Repository` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `url` TEXT NOT NULL, `name` TEXT)');
 
@@ -189,9 +189,9 @@ class _$PdfDao extends PdfDao {
             title: row['title'] as String,
             renamedTitle: row['renamedTitle'] as String?,
             path: row['path'] as String?,
-            url: row['url'] as String,
+            url: row['url'] as String?,
             version: row['version'] as double,
-            description: row['description'] as String));
+            description: row['description'] as String?));
   }
 
   @override
@@ -202,9 +202,9 @@ class _$PdfDao extends PdfDao {
             title: row['title'] as String,
             renamedTitle: row['renamedTitle'] as String?,
             path: row['path'] as String?,
-            url: row['url'] as String,
+            url: row['url'] as String?,
             version: row['version'] as double,
-            description: row['description'] as String),
+            description: row['description'] as String?),
         arguments: [id],
         queryableName: 'Pdf',
         isView: false);

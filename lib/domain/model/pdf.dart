@@ -7,10 +7,9 @@ class Pdf {
   final String title;
   final String? renamedTitle;
   final String? path;
-  final String url;
-
+  final String? url;
   final double version;
-  final String description;
+  final String? description;
   int lastPageOpened = 0;
 
   Pdf(
@@ -18,9 +17,9 @@ class Pdf {
       required this.title,
       this.renamedTitle,
       this.path,
-      required this.url,
+      this.url,
       required this.version,
-      required this.description});
+      this.description});
 
   String getTitle() {
     return renamedTitle ?? title;

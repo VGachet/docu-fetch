@@ -19,6 +19,7 @@ import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_theme.dart';
 import 'package:docu_fetch/presentation/widget/alert_message.dart';
 import 'package:docu_fetch/util/resource.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -155,17 +156,7 @@ class HomeController extends GetxController
             pdf.copyWith(path: '$localPath/${pdf.title}-${pdf.version}.pdf'));
 
         if (downloadPdfResource is Success) {
-          final downloadedPdf = downloadPdfResource.data!;
-          final insertLocalPdfResource =
-              await insertLocalPdfUseCase(downloadedPdf);
-
-          if (insertLocalPdfResource is Success) {
-            await loadLocalPdfList();
-          } else {
-            AlertMessage.show(
-                message:
-                    'error_saving_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
-          }
+          await insertLocalPdf(downloadPdfResource.data!);
         } else {
           AlertMessage.show(
               message: 'error_downloading_pdf'
@@ -186,6 +177,17 @@ class HomeController extends GetxController
 
     repoJsonUrlController.clear();
     repoNameController.clear();
+  }
+
+  Future<void> insertLocalPdf(Pdf pdf) async {
+    final insertLocalPdfResource = await insertLocalPdfUseCase(pdf);
+
+    if (insertLocalPdfResource is Success) {
+      await loadLocalPdfList();
+    } else {
+      AlertMessage.show(
+          message: 'error_saving_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+    }
   }
 
   void displayDownloadProgressPopup() {
@@ -283,8 +285,6 @@ class HomeController extends GetxController
     }
   }
 
-  void pickPdfFromDevice() {}
-
   Future<bool> insertLocalRepository(
       {required String repositoryName, required String repositoryUrl}) async {
     if (repoJsonUrlController.text.split('.').last != 'json') {
@@ -341,5 +341,44 @@ class HomeController extends GetxController
     }
 
     renamePdfController.clear();
+  }
+
+  Future<void> pickPdfFromDevice() async {
+    final FilePickerResult? result = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+
+    for (final file in result!.files) {
+      if (file.path == null) {
+        continue;
+      }
+
+      final String pdfTitle =
+          file.name.substring(0, file.name.lastIndexOf('.'));
+
+      const double pdfVersion = 1.0;
+
+      final String localPdfDirectoryPath =
+          '${(await getApplicationDocumentsDirectory()).path}/pdfs';
+
+      if (!Directory(localPdfDirectoryPath).existsSync()) {
+        Directory(localPdfDirectoryPath).createSync();
+      }
+
+      final String localFilePath =
+          '$localPdfDirectoryPath/$pdfTitle-$pdfVersion.pdf';
+
+      try {
+        //PDF file is copied to the app's document directory
+        final localCreatedFile = await File(localFilePath).create();
+        await localCreatedFile.writeAsBytes(await file.xFile.readAsBytes());
+
+        await insertLocalPdf(
+            Pdf(title: pdfTitle, path: localFilePath, version: pdfVersion));
+      } catch (e) {
+        print(e);
+        AlertMessage.show(
+            message: 'error_saving_pdf'.trParams({'pdfTitle': pdfTitle}));
+      }
+    }
   }
 }

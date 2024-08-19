@@ -25,7 +25,7 @@ class NeumorphicListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.symmetric(
-            vertical: CustomMargins.margin8,
+            vertical: CustomMargins.margin4,
             horizontal: CustomMargins.margin16),
         decoration: BoxDecoration(
           color: CustomColors.colorGreyLight,
