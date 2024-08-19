@@ -117,4 +117,14 @@ class MainRepositoryImpl implements MainRepository {
       return const Error(ErrorStatus.unexpected);
     }
   }
+
+  @override
+  Future<Resource<void>> updateLocalPdf(Pdf pdf) async {
+    try {
+      await database.pdfDao.updatePdf(pdf);
+      return const Success(null);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
 }

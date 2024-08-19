@@ -36,14 +36,21 @@ final Map<String, String> enUS = {
       '@pdfTitle is already downloaded (version: @pdfVersion)',
   'downloading': '@currentDownloadedSize mo / @totalSize mo',
   'version': 'Version: @version',
+  'error_renaming_pdf': 'Error renaming the PDF: @pdfTitle',
+  'rename': 'Rename',
+  'open': 'Open',
+  'delete': 'Delete',
+  'enter_new_pdf_name': 'Enter a new name for the PDF',
+  'delete_pdf_confirmation':
+      'Are you sure you want to delete the PDF @pdfTitle?',
 };
 
 final Map<String, String> fr = {
   'home': 'Accueil',
   'an_error_occured': 'Une erreur est survenue',
   'enter_json_repo_url': "Entrer l'URL JSON d'un dépôt DocuFetch",
-  'add_pdf_from_url': 'Ajouter un PDF depuis une URL',
-  'add_pdf_from_file': 'Ajouter un PDF depuis un fichier',
+  'add_pdf_from_url': 'Ajouter un/des PDF depuis une URL',
+  'add_pdf_from_file': 'Ajouter un/des PDF depuis un fichier',
   'validate': 'Valider',
   'cancel': 'Annuler',
   'empty_pdf_list':
@@ -72,4 +79,11 @@ final Map<String, String> fr = {
       '@pdfTitle est déjà téléchargé (version: @pdfVersion)',
   'downloading': '@currentDownloadedSize mo / @totalSize mo',
   'version': 'Version: @version',
+  'error_renaming_pdf': 'Erreur lors du renommage du PDF: @pdfTitle',
+  'rename': 'Renommer',
+  'open': 'Ouvrir',
+  'delete': 'Supprimer',
+  'enter_new_pdf_name': 'Entrer un nouveau nom pour le PDF',
+  'delete_pdf_confirmation':
+      'Êtes-vous sûr de vouloir supprimer le PDF @pdfTitle ?',
 };

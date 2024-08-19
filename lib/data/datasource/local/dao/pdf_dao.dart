@@ -17,4 +17,7 @@ abstract class PdfDao {
 
   @Query('UPDATE Pdf SET lastPageOpened = :lastPage WHERE id = :id')
   Future<void> updateLastPageOpened(int lastPage, int id);
+
+  @Update(onConflict: OnConflictStrategy.replace)
+  Future<void> updatePdf(Pdf pdf);
 }

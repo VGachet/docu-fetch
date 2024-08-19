@@ -5,6 +5,7 @@ class Pdf {
   @PrimaryKey(autoGenerate: true)
   final int? id;
   final String title;
+  final String? renamedTitle;
   final String? path;
   final String url;
 
@@ -15,14 +16,20 @@ class Pdf {
   Pdf(
       {this.id,
       required this.title,
+      this.renamedTitle,
       this.path,
       required this.url,
       required this.version,
       required this.description});
 
+  String getTitle() {
+    return renamedTitle ?? title;
+  }
+
   Pdf copyWith({
     int? id,
     String? title,
+    String? renamedTitle,
     String? path,
     String? url,
     double? version,
@@ -32,6 +39,7 @@ class Pdf {
       Pdf(
           id: id ?? this.id,
           title: title ?? this.title,
+          renamedTitle: renamedTitle ?? this.renamedTitle,
           path: path ?? this.path,
           url: url ?? this.url,
           version: version ?? this.version,

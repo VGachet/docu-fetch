@@ -98,7 +98,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `path` TEXT, `url` TEXT NOT NULL, `version` REAL NOT NULL, `description` TEXT NOT NULL, `lastPageOpened` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `renamedTitle` TEXT, `path` TEXT, `url` TEXT NOT NULL, `version` REAL NOT NULL, `description` TEXT NOT NULL, `lastPageOpened` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Repository` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `url` TEXT NOT NULL, `name` TEXT)');
 
@@ -130,6 +130,22 @@ class _$PdfDao extends PdfDao {
             (Pdf item) => <String, Object?>{
                   'id': item.id,
                   'title': item.title,
+                  'renamedTitle': item.renamedTitle,
+                  'path': item.path,
+                  'url': item.url,
+                  'version': item.version,
+                  'description': item.description,
+                  'lastPageOpened': item.lastPageOpened
+                },
+            changeListener),
+        _pdfUpdateAdapter = UpdateAdapter(
+            database,
+            'Pdf',
+            ['id'],
+            (Pdf item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'renamedTitle': item.renamedTitle,
                   'path': item.path,
                   'url': item.url,
                   'version': item.version,
@@ -144,6 +160,7 @@ class _$PdfDao extends PdfDao {
             (Pdf item) => <String, Object?>{
                   'id': item.id,
                   'title': item.title,
+                  'renamedTitle': item.renamedTitle,
                   'path': item.path,
                   'url': item.url,
                   'version': item.version,
@@ -160,6 +177,8 @@ class _$PdfDao extends PdfDao {
 
   final InsertionAdapter<Pdf> _pdfInsertionAdapter;
 
+  final UpdateAdapter<Pdf> _pdfUpdateAdapter;
+
   final DeletionAdapter<Pdf> _pdfDeletionAdapter;
 
   @override
@@ -168,6 +187,7 @@ class _$PdfDao extends PdfDao {
         mapper: (Map<String, Object?> row) => Pdf(
             id: row['id'] as int?,
             title: row['title'] as String,
+            renamedTitle: row['renamedTitle'] as String?,
             path: row['path'] as String?,
             url: row['url'] as String,
             version: row['version'] as double,
@@ -180,6 +200,7 @@ class _$PdfDao extends PdfDao {
         mapper: (Map<String, Object?> row) => Pdf(
             id: row['id'] as int?,
             title: row['title'] as String,
+            renamedTitle: row['renamedTitle'] as String?,
             path: row['path'] as String?,
             url: row['url'] as String,
             version: row['version'] as double,
@@ -203,6 +224,11 @@ class _$PdfDao extends PdfDao {
   Future<int> insertPdf(Pdf pdf) {
     return _pdfInsertionAdapter.insertAndReturnId(
         pdf, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updatePdf(Pdf pdf) async {
+    await _pdfUpdateAdapter.update(pdf, OnConflictStrategy.replace);
   }
 
   @override

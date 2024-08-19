@@ -8,6 +8,7 @@ abstract class MainRepository {
   Future<Resource<List<Pdf>>> getLocalPdfList();
   Future<Resource<int>> insertLocalPdf(Pdf pdf);
   Future<Resource<int>> deleteLocalPdf(Pdf pdf);
+  Future<Resource<void>> updateLocalPdf(Pdf pdf);
   Future<Resource<void>> updateLastPageOpened(
       {required int lastPage, required int id});
   Future<Resource<List<Repository>>> getLocalRepositoryList();

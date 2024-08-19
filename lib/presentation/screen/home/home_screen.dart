@@ -1,3 +1,5 @@
+import 'package:docu_fetch/domain/model/TextIcon.dart';
+import 'package:docu_fetch/domain/model/pdf.dart';
 import 'package:docu_fetch/presentation/routes.dart';
 import 'package:docu_fetch/presentation/screen/home/home_controller.dart';
 import 'package:docu_fetch/presentation/ui/lower_case_input_formatter.dart';
@@ -45,15 +47,26 @@ class HomeScreen extends StatelessWidget {
                     .map((pdf) => Padding(
                         padding: const EdgeInsets.all(CustomMargins.margin8),
                         child: NeumorphicListTile(
-                            title: pdf.title,
+                            title: pdf.getTitle(),
                             subtitle: 'version'
                                 .trParams({'version': '${pdf.version}'}),
-                            trailing: NeumorphicButton(
-                              icon: Icons.delete,
-                              onTap: () async {
-                                await controller.deleteLocalPdf(pdf);
+                            trailingDropdown: {
+                              TextIcon(
+                                  text: 'open'.tr,
+                                  icon: Icons.open_in_new_outlined): () {
+                                Get.toNamed(Routes.pdf, arguments: pdf);
                               },
-                            ),
+                              TextIcon(
+                                  text: 'rename'.tr,
+                                  icon: Icons.edit_outlined): () {
+                                showRenamePdfDialog(pdf);
+                              },
+                              TextIcon(
+                                  text: 'delete'.tr,
+                                  icon: Icons.delete_outline): () async {
+                                showDeleteConfirmDialog(pdf);
+                              },
+                            },
                             onTap: () {
                               Get.toNamed(Routes.pdf, arguments: pdf);
                             })))
@@ -139,7 +152,39 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void showDeleteConfirmDialog() {}
+  void showDeleteConfirmDialog(Pdf pdf) {
+    showDialog(
+      context: Get.overlayContext!,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.all(CustomMargins.margin16),
+        elevation: 4,
+        backgroundColor: CustomColors.colorGreyLight,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+                'delete_pdf_confirmation'
+                    .trParams({'pdfTitle': pdf.getTitle()}),
+                style: CustomTheme.body),
+          ],
+        ),
+        actions: [
+          NeumorphicButton(
+            onTap: Get.back,
+            text: 'cancel'.tr,
+          ),
+          NeumorphicButton(
+            onTap: () async {
+              await controller.deleteLocalPdf(pdf);
+              Get.back();
+            },
+            text: 'delete'.tr,
+          ),
+        ],
+      ),
+    );
+  }
 
   void showRepositoryListDialog() {
     showDialog(
@@ -181,6 +226,59 @@ class HomeScreen extends StatelessWidget {
           NeumorphicButton(
             onTap: Get.back,
             text: 'close'.tr,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showRenamePdfDialog(Pdf pdf) {
+    showDialog(
+      context: Get.overlayContext!,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.all(CustomMargins.margin16),
+        elevation: 4,
+        backgroundColor: CustomColors.colorGreyLight,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              style: CustomTheme.body,
+              controller: controller.renamePdfController,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                labelText: 'enter_new_pdf_name'.tr,
+                border: const OutlineInputBorder(),
+                labelStyle: CustomTheme.body,
+                enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          NeumorphicButton(
+            onTap: () {
+              controller.renamePdfController.clear();
+              Get.back();
+            },
+            text: 'cancel'.tr,
+          ),
+          Obx(
+            () => NeumorphicButton(
+              onTap: () async {
+                Get.back();
+                await controller.renamePdf(pdf.copyWith(
+                    renamedTitle: controller.renamePdfController.text));
+              },
+              isDisabled: controller.isRenameButtonDisabled.value,
+              text: 'rename'.tr,
+            ),
           ),
         ],
       ),

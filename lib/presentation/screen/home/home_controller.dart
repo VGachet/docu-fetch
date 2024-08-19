@@ -13,6 +13,7 @@ import 'package:docu_fetch/domain/usecase/get_local_repository_list_use_case.dar
 import 'package:docu_fetch/domain/usecase/get_pdf_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_repository_use_case.dart';
+import 'package:docu_fetch/domain/usecase/update_pdf_use_case.dart';
 import 'package:docu_fetch/presentation/main_controller.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_theme.dart';
@@ -29,6 +30,7 @@ class HomeController extends GetxController
       required this.getPdfListUseCase,
       required this.insertLocalPdfUseCase,
       required this.deleteLocalPdfUseCase,
+      required this.updateLocalPdfUseCase,
       required this.getLocalPdfListUseCase,
       required this.insertLocalRepositoryUseCase,
       required this.getLocalRepositoryListUseCase,
@@ -39,6 +41,7 @@ class HomeController extends GetxController
   final InsertLocalPdfUseCase insertLocalPdfUseCase;
   final GetLocalPdfListUseCase getLocalPdfListUseCase;
   final DeleteLocalPdfUseCase deleteLocalPdfUseCase;
+  final UpdateLocalPdfUseCase updateLocalPdfUseCase;
   final InsertLocalRepositoryUseCase insertLocalRepositoryUseCase;
   final GetLocalRepositoryListUseCase getLocalRepositoryListUseCase;
   final DeleteLocalRepositoryUseCase deleteLocalRepositoryUseCase;
@@ -51,6 +54,7 @@ class HomeController extends GetxController
 
   final TextEditingController repoJsonUrlController = TextEditingController();
   final TextEditingController repoNameController = TextEditingController();
+  final TextEditingController renamePdfController = TextEditingController();
 
   //https://vgachet.dev/wp-content/uploads/test/docu-fetch-test.json
 
@@ -60,6 +64,8 @@ class HomeController extends GetxController
 
   RxBool isValidateButtonDisabled = true.obs;
 
+  RxBool isRenameButtonDisabled = true.obs;
+
   @override
   void onReady() async {
     super.onReady();
@@ -68,6 +74,7 @@ class HomeController extends GetxController
 
     repoJsonUrlController.addListener(validatorFields);
     repoNameController.addListener(validatorFields);
+    renamePdfController.addListener(validatorRenameFields);
   }
 
   void validatorFields() {
@@ -89,10 +96,19 @@ class HomeController extends GetxController
     }
   }
 
+  void validatorRenameFields() {
+    if (renamePdfController.text.length > 3) {
+      isRenameButtonDisabled.value = false;
+    } else {
+      isRenameButtonDisabled.value = true;
+    }
+  }
+
   @override
   void onClose() {
     repoJsonUrlController.dispose();
     repoNameController.dispose();
+    renamePdfController.dispose();
     super.onClose();
   }
 
@@ -116,7 +132,7 @@ class HomeController extends GetxController
     if (pdfListResource is Success) {
       final List<Pdf> downloadedPdfList = pdfListResource.data!;
       for (final pdf in downloadedPdfList) {
-        downloadData.value!.fileName = pdf.title;
+        downloadData.value!.fileName = pdf.getTitle();
         downloadData.value!.currentDownloadIndex =
             downloadedPdfList.indexOf(pdf) + 1;
         downloadData.value!.numberOfFiles = downloadedPdfList.length;
@@ -127,8 +143,10 @@ class HomeController extends GetxController
                 element.url == pdf.url && element.version == pdf.version) !=
             null) {
           AlertMessage.show(
-              message: 'pdf_already_downloaded'.trParams(
-                  {'pdfTitle': pdf.title, 'pdfVersion': '${pdf.version}'}));
+              message: 'pdf_already_downloaded'.trParams({
+            'pdfTitle': pdf.getTitle(),
+            'pdfVersion': '${pdf.version}'
+          }));
           await Future.delayed(const Duration(seconds: 2));
           continue;
         }
@@ -145,12 +163,13 @@ class HomeController extends GetxController
             await loadLocalPdfList();
           } else {
             AlertMessage.show(
-                message: 'error_saving_pdf'.trParams({'pdfTitle': pdf.title}));
+                message:
+                    'error_saving_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
           }
         } else {
           AlertMessage.show(
-              message:
-                  'error_downloading_pdf'.trParams({'pdfTitle': pdf.title}));
+              message: 'error_downloading_pdf'
+                  .trParams({'pdfTitle': pdf.getTitle()}));
         }
 
         downloadData.value?.fileName = '';
@@ -255,11 +274,12 @@ class HomeController extends GetxController
         File('$localPath/${pdf.title}-${pdf.version}.pdf').deleteSync();
       } catch (_) {
         AlertMessage.show(
-            message: 'error_deleting_pdf'.trParams({'pdfTitle': pdf.title}));
+            message:
+                'error_deleting_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
       }
     } else {
       AlertMessage.show(
-          message: 'error_deleting_pdf'.trParams({'pdfTitle': pdf.title}));
+          message: 'error_deleting_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
     }
   }
 
@@ -308,5 +328,18 @@ class HomeController extends GetxController
     } else {
       AlertMessage.show(message: 'delete_repo_error'.tr);
     }
+  }
+
+  Future<void> renamePdf(Pdf pdf) async {
+    final updateLocalPDfResource = await updateLocalPdfUseCase(pdf);
+
+    if (updateLocalPDfResource is Success) {
+      await loadLocalPdfList();
+    } else {
+      AlertMessage.show(
+          message: 'error_renaming_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+    }
+
+    renamePdfController.clear();
   }
 }
