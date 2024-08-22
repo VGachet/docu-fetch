@@ -19,4 +19,5 @@ abstract class MainRepository {
   Future<Resource<List<Folder>>> getLocalFolderList();
   Future<Resource<void>> updateLocalFolderList(List<Folder> folderList);
   Future<Resource<void>> updateLocalFolder(Folder folder);
+  Future<Resource<void>> deleteLocalFolder(Folder folder);
 }

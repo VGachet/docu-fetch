@@ -48,6 +48,11 @@ final Map<String, String> enUS = {
   'enter_folder_name': 'Enter a folder name',
   'enter_new_folder_name': 'Enter a new name for the folder',
   'error_update_last_page_opened': 'Error updating the last page opened',
+  'error_deleting_folder': 'Error deleting the folder: @folderTitle',
+  'delete_folder_confirmation':
+      'Are you sure you want to delete the folder @folderTitle?',
+  'delete_selected_pdfs_confirmation':
+      'Are you sure you want to delete the selected PDFs?',
 };
 
 final Map<String, String> fr = {
@@ -97,4 +102,10 @@ final Map<String, String> fr = {
   'enter_new_folder_name': 'Entrer un nouveau nom pour le dossier',
   'error_update_last_page_opened':
       "Erreur lors de la mise à jour de la dernière page ouverte",
+  'error_deleting_folder':
+      'Erreur lors de la suppression du dossier: @folderTitle',
+  'delete_folder_confirmation':
+      'Êtes-vous sûr de vouloir supprimer le dossier @folderTitle ?',
+  'delete_selected_pdfs_confirmation':
+      'Êtes-vous sûr de vouloir supprimer les PDF sélectionnés ?',
 };

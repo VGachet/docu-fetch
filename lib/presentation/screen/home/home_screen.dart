@@ -45,30 +45,40 @@ class HomeScreen extends StatelessWidget {
                         style: CustomTheme.body, textAlign: TextAlign.center)),
               ))
           : Column(children: [
-              Obx(() => controller.selectedPdfs.isNotEmpty
+              Obx(() => controller.pdfAllowingSelection.isNotEmpty ||
+                      controller.selectedPdfs.isNotEmpty
                   ? Container(
                       color: CustomColors.colorGreyLight,
                       padding: const EdgeInsets.all(CustomMargins.margin8),
                       child: Row(
                         children: [
                           const Spacer(),
-                          Obx(
-                            () => NeumorphicButton(
-                              onTap: controller.cutSelectedPdfs,
-                              text: 'cut'.tr,
-                              isDisabled: controller.isCutMode.value,
-                              icon: Icons.content_cut,
-                              disabledColor: CustomColors.colorBlue,
-                            ),
+                          NeumorphicButton(
+                            onTap: showDeleteConfirmDialog,
+                            text: 'delete'.tr,
+                            icon: Icons.delete_outline,
                           ),
                           const SizedBox(width: CustomMargins.margin8),
-                          controller.isCutMode.value
-                              ? NeumorphicButton(
-                                  onTap: controller.cancelCutMode,
-                                  text: 'cancel'.tr,
-                                  icon: Icons.cancel_outlined,
-                                )
-                              : const SizedBox()
+                          if (controller.selectedPdfs.isNotEmpty)
+                            Obx(
+                              () => NeumorphicButton(
+                                onTap: controller.cutSelectedPdfs,
+                                text: 'cut'.tr,
+                                isDisabled: controller.isCutMode.value,
+                                icon: Icons.content_cut,
+                                iconColor: controller.isCutMode.value
+                                    ? CustomColors.colorWhite
+                                    : CustomColors.colorBlack,
+                                disabledColor: CustomColors.colorBlue,
+                              ),
+                            ),
+                          if (controller.selectedPdfs.isNotEmpty)
+                            const SizedBox(width: CustomMargins.margin8),
+                          NeumorphicButton(
+                            onTap: controller.cancelCutMode,
+                            text: 'cancel'.tr,
+                            icon: Icons.cancel_outlined,
+                          ),
                         ],
                       ),
                     )
@@ -138,20 +148,26 @@ class HomeScreen extends StatelessWidget {
           // Toggle selection mode and select PDFs in the same folder
           controller.toggleSelectionMode(pdf: pdf);
         },
-        trailingDropdown: {
-          TextIcon(text: 'open'.tr, icon: Icons.open_in_new_outlined): () =>
-              Get.toNamed(Routes.pdf, arguments: pdf),
-          TextIcon(text: 'rename'.tr, icon: Icons.edit_outlined): () {
-            controller.renamePdfController.text = pdf.getTitle();
-            showRenamePdfDialog(pdf);
-          },
-          TextIcon(text: 'delete'.tr, icon: Icons.delete_outline): () async {
-            showDeleteConfirmDialog(pdf);
-          },
-        },
-        onTap: () {
-          Get.toNamed(Routes.pdf, arguments: pdf);
-        },
+        trailingDropdown: controller.pdfAllowingSelection.isNotEmpty ||
+                controller.selectedPdfs.isNotEmpty
+            ? null
+            : {
+                TextIcon(text: 'open'.tr, icon: Icons.open_in_new_outlined):
+                    () => Get.toNamed(Routes.pdf, arguments: pdf),
+                TextIcon(text: 'rename'.tr, icon: Icons.edit_outlined): () {
+                  controller.renamePdfController.text = pdf.getTitle();
+                  showRenamePdfDialog(pdf);
+                },
+                TextIcon(text: 'delete'.tr, icon: Icons.delete_outline): () =>
+                    showDeleteConfirmDialog(pdf: pdf),
+              },
+        onTap: () => controller.pdfAllowingSelection.contains(pdf)
+            ? controller.selectedPdfs.contains(pdf)
+                ? controller.selectedPdfs.remove(pdf)
+                : controller.selectedPdfs.add(pdf)
+            : controller.selectedPdfs.isNotEmpty
+                ? null
+                : Get.toNamed(Routes.pdf, arguments: pdf),
       )));
 
   Widget getFolderListTile(Folder folder) => Padding(
@@ -165,7 +181,8 @@ class HomeScreen extends StatelessWidget {
                 controller.renameFolderController.text = folder.title;
                 showRenameFolderDialog(folder: folder);
               },
-              TextIcon(text: 'delete'.tr, icon: Icons.delete_outline): () {},
+              TextIcon(text: 'delete'.tr, icon: Icons.delete_outline): () =>
+                  showDeleteConfirmDialog(folder: folder),
             },
             onTap: controller.isCutMode.value
                 ? () => controller.moveSelectedPdfToFolder(folder)
@@ -241,7 +258,8 @@ class HomeScreen extends StatelessWidget {
                   final bool isRepoAdded = await controller.insertRepository();
                   if (isRepoAdded) {
                     await controller.downloadPdf(
-                        repositoryUrl: controller.repoJsonUrlController.text);
+                        repositoryUrl: controller.repoJsonUrlController.text,
+                        repositoryName: controller.repoNameController.text);
                   } else {
                     controller.repoNameController.clear();
                     controller.repoJsonUrlController.clear();
@@ -254,7 +272,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void showDeleteConfirmDialog(Pdf pdf) {
+  void showDeleteConfirmDialog({Pdf? pdf, Folder? folder}) {
     showDialog(
       context: Get.overlayContext!,
       builder: (context) => AlertDialog(
@@ -266,8 +284,13 @@ class HomeScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-                'delete_pdf_confirmation'
-                    .trParams({'pdfTitle': pdf.getTitle()}),
+                pdf != null
+                    ? 'delete_pdf_confirmation'
+                        .trParams({'pdfTitle': pdf.getTitle()})
+                    : folder != null
+                        ? 'delete_folder_confirmation'
+                            .trParams({'folderTitle': folder.title})
+                        : 'delete_selected_pdfs_confirmation'.tr,
                 style: CustomTheme.body),
           ],
         ),
@@ -278,7 +301,13 @@ class HomeScreen extends StatelessWidget {
           ),
           NeumorphicButton(
             onTap: () async {
-              await controller.deleteLocalPdf(pdf);
+              if (folder != null) {
+                await controller.deleteFolder(folder);
+              } else if (pdf != null) {
+                await controller.deleteLocalPdf(pdf);
+              } else {
+                await controller.deleteSelectedPdfs();
+              }
               Get.back();
             },
             text: 'delete'.tr,
@@ -293,8 +322,7 @@ class HomeScreen extends StatelessWidget {
       context: Get.overlayContext!,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(
-            horizontal: 0, vertical: CustomMargins.margin8),
+        contentPadding: const EdgeInsets.all(CustomMargins.margin8),
         elevation: 4,
         backgroundColor: CustomColors.colorGreyLight,
         content: SizedBox(
@@ -311,11 +339,13 @@ class HomeScreen extends StatelessWidget {
                   subtitle: repo.url,
                   onTap: () {
                     Get.back();
-                    controller.downloadPdf(repositoryUrl: repo.url);
+                    controller.downloadPdf(
+                        repositoryUrl: repo.url, repositoryName: repo.name);
                   },
                   trailingDropdown: {
                     TextIcon(text: 'update'.tr, icon: Icons.update): () =>
-                        controller.downloadPdf(repositoryUrl: repo.url),
+                        controller.downloadPdf(
+                            repositoryUrl: repo.url, repositoryName: repo.name),
                     TextIcon(text: 'delete'.tr, icon: Icons.delete_outline):
                         () => controller.deleteLocalRepository(repo),
                   },

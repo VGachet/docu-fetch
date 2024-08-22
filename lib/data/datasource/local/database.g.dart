@@ -102,7 +102,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `renamedTitle` TEXT, `path` TEXT, `url` TEXT, `version` REAL NOT NULL, `description` TEXT, `lastPageOpened` INTEGER NOT NULL, `folderId` INTEGER, `order` INTEGER NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Repository` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `url` TEXT NOT NULL, `name` TEXT)');
+            'CREATE TABLE IF NOT EXISTS `Repository` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `url` TEXT NOT NULL, `name` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Folder` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `parentFolder` INTEGER, `order` INTEGER NOT NULL)');
 
@@ -204,6 +204,7 @@ class _$PdfDao extends PdfDao {
             url: row['url'] as String?,
             version: row['version'] as double,
             description: row['description'] as String?,
+            lastPageOpened: row['lastPageOpened'] as int,
             folderId: row['folderId'] as int?,
             order: row['order'] as int));
   }
@@ -219,6 +220,7 @@ class _$PdfDao extends PdfDao {
             url: row['url'] as String?,
             version: row['version'] as double,
             description: row['description'] as String?,
+            lastPageOpened: row['lastPageOpened'] as int,
             folderId: row['folderId'] as int?,
             order: row['order'] as int),
         arguments: [id]);
@@ -290,7 +292,7 @@ class _$RepositoryDao extends RepositoryDao {
         mapper: (Map<String, Object?> row) => Repository(
             url: row['url'] as String,
             id: row['id'] as int?,
-            name: row['name'] as String?));
+            name: row['name'] as String));
   }
 
   @override
@@ -299,7 +301,7 @@ class _$RepositoryDao extends RepositoryDao {
         mapper: (Map<String, Object?> row) => Repository(
             url: row['url'] as String,
             id: row['id'] as int?,
-            name: row['name'] as String?),
+            name: row['name'] as String),
         arguments: [id]);
   }
 

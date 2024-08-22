@@ -7,8 +7,9 @@ import 'package:docu_fetch/domain/model/download_data.dart';
 import 'package:docu_fetch/domain/model/folder.dart';
 import 'package:docu_fetch/domain/model/pdf.dart';
 import 'package:docu_fetch/domain/model/repository.dart';
-import 'package:docu_fetch/domain/usecase/delete_pdf_use_case.dart';
-import 'package:docu_fetch/domain/usecase/delete_repository_use_case.dart';
+import 'package:docu_fetch/domain/usecase/delete_local_folder_use_case.dart';
+import 'package:docu_fetch/domain/usecase/delete_local_pdf_use_case.dart';
+import 'package:docu_fetch/domain/usecase/delete_local_repository_use_case.dart';
 import 'package:docu_fetch/domain/usecase/download_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_local_folder_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_local_pdf_list_use_case.dart';
@@ -44,6 +45,7 @@ class HomeController extends GetxController
     required this.insertLocalFolderUseCase,
     required this.getLocalFolderListUseCase,
     required this.updateLocalFolderUseCase,
+    required this.deleteLocalFolderUseCase,
   });
 
   final DownloadPdfUseCase downloadPdfUseCase;
@@ -58,6 +60,7 @@ class HomeController extends GetxController
   final InsertLocalFolderUseCase insertLocalFolderUseCase;
   final GetLocalFolderListUseCase getLocalFolderListUseCase;
   final UpdateLocalLocalFolderUseCase updateLocalFolderUseCase;
+  final DeleteLocalFolderUseCase deleteLocalFolderUseCase;
 
   final MainController mainController = Get.find();
 
@@ -147,7 +150,8 @@ class HomeController extends GetxController
     super.onClose();
   }
 
-  Future<void> downloadPdf({required String repositoryUrl}) async {
+  Future<void> downloadPdf(
+      {required String repositoryUrl, required String repositoryName}) async {
     final localPath = '${(await getApplicationDocumentsDirectory()).path}/pdfs';
 
     downloadData.value = DownloadData();
@@ -166,7 +170,7 @@ class HomeController extends GetxController
 
     if (pdfListResource is Success) {
       final createFolderResource = await insertLocalFolderUseCase(
-          Folder(title: repoNameController.text, order: 0));
+          Folder(title: repositoryName, order: 0));
 
       if (createFolderResource is Success) {
         final List<Pdf> downloadedPdfList = pdfListResource.data!;
@@ -488,10 +492,10 @@ class HomeController extends GetxController
     } else {
       isCutMode.value = false;
       if (pdf != null) {
-        pdfAllowingSelection.add(pdf);
         pdfAllowingSelection.addAll(pdfList
             .where((element) => element.folderId == pdf.folderId)
             .toList());
+        selectedPdfs.add(pdf);
       }
     }
   }
@@ -546,5 +550,72 @@ class HomeController extends GetxController
     }
 
     renameFolderController.clear();
+  }
+
+  Future<void> deleteFolder(Folder folder) async {
+    final List<Pdf> pdfsToDelete =
+        pdfList.where((pdf) => pdf.folderId == folder.id).toList();
+
+    for (Pdf pdf in pdfsToDelete) {
+      final deletePdfResource = await deleteLocalPdfUseCase(pdf);
+
+      if (deletePdfResource is Success) {
+        pdfList.remove(pdf);
+        final localPath =
+            '${(await getApplicationDocumentsDirectory()).path}/pdfs';
+        try {
+          File('$localPath/${pdf.title}-${pdf.version}.pdf').deleteSync();
+        } catch (_) {
+          AlertMessage.show(
+              message:
+                  'error_deleting_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+          return;
+        }
+      } else {
+        AlertMessage.show(
+            message:
+                'error_deleting_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+        return;
+      }
+    }
+
+    final deleteFolderResource = await deleteLocalFolderUseCase(folder);
+
+    if (deleteFolderResource is Success) {
+      await loadLocalPdfList();
+    } else {
+      AlertMessage.show(
+          message:
+              'error_deleting_folder'.trParams({'folderTitle': folder.title}));
+    }
+  }
+
+  Future<void> deleteSelectedPdfs() async {
+    for (Pdf pdf in selectedPdfs) {
+      final deletePdfResource = await deleteLocalPdfUseCase(pdf);
+
+      if (deletePdfResource is Success) {
+        pdfList.remove(pdf);
+        final localPath =
+            '${(await getApplicationDocumentsDirectory()).path}/pdfs';
+        try {
+          File('$localPath/${pdf.title}-${pdf.version}.pdf').deleteSync();
+        } catch (_) {
+          AlertMessage.show(
+              message:
+                  'error_deleting_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+        }
+      } else {
+        AlertMessage.show(
+            message:
+                'error_deleting_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+      }
+    }
+
+    selectedPdfs.clear();
+    isCutMode.value = false;
+    pdfAllowingSelection.clear();
+
+    await loadLocalPdfList();
   }
 }

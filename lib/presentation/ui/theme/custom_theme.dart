@@ -23,9 +23,13 @@ mixin CustomTheme {
         progressIndicatorTheme:
             const ProgressIndicatorThemeData(color: CustomColors.colorBlack),
         checkboxTheme: CheckboxThemeData(
-          fillColor: WidgetStateProperty.all(CustomColors.colorGreyLight),
+          fillColor: WidgetStateProperty.all(CustomColors.colorBlue),
           checkColor: WidgetStateProperty.all(CustomColors.colorWhite),
           overlayColor: WidgetStateProperty.all(CustomColors.colorGreyLight),
+          side: const BorderSide(
+            color: CustomColors.colorBlue,
+            width: 2,
+          ),
         ),
       );
 

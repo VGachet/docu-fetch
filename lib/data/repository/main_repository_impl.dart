@@ -180,4 +180,14 @@ class MainRepositoryImpl implements MainRepository {
       return const Error(ErrorStatus.unexpected);
     }
   }
+
+  @override
+  Future<Resource<void>> deleteLocalFolder(Folder folder) async {
+    try {
+      await database.folderDao.deleteFolder(folder);
+      return const Success(null);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
 }

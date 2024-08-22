@@ -12,7 +12,7 @@ class CustomColors {
   static const Color colorRedLight = Color(0xFFFDCAC4);
   static const Color colorRed = Color(0xFFFD5844);
   static const Color colorRedStrong = Color(0xFFCE1126);
-  static const Color colorBlue = Color(0xFF4C6AA0);
+  static const Color colorBlue = Color(0xFF2E8BC0);
   static const Color colorBlueGrey = Color(0xFF213C55);
   static const Color colorBlueGreyMedium = Color(0xFF2D496A);
   static const Color colorGreyLight = Color(0xFFF0F0F0);

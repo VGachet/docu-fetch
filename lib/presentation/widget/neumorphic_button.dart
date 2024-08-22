@@ -15,6 +15,7 @@ class NeumorphicButton extends StatelessWidget {
     this.text,
     this.isDisabled = false,
     this.disabledColor = CustomColors.colorGreyLight,
+    this.iconColor = CustomColors.colorBlack,
   });
 
   final RxBool isElevated = false.obs;
@@ -27,6 +28,7 @@ class NeumorphicButton extends StatelessWidget {
   final String? text;
   final bool isDisabled;
   final Color disabledColor;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +80,7 @@ class NeumorphicButton extends StatelessWidget {
             ],
           ),
           child: icon != null
-              ? Icon(icon, size: 20, color: CustomColors.colorBlack)
+              ? Icon(icon, size: 20, color: iconColor)
               : Text(text ?? '',
                   style:
                       isDisabled ? CustomTheme.bodyDisabled : CustomTheme.body),
