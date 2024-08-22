@@ -10,7 +10,9 @@ class Pdf {
   final String? url;
   final double version;
   final String? description;
-  int lastPageOpened = 0;
+  int lastPageOpened;
+  int? folderId;
+  int order;
 
   Pdf(
       {this.id,
@@ -19,7 +21,10 @@ class Pdf {
       this.path,
       this.url,
       required this.version,
-      this.description});
+      this.description,
+      this.lastPageOpened = 0,
+      this.folderId,
+      this.order = 0});
 
   String getTitle() {
     return renamedTitle ?? title;
@@ -34,13 +39,19 @@ class Pdf {
     double? version,
     String? description,
     int? lastPageOpened,
+    int? folderId,
+    int? order,
   }) =>
       Pdf(
-          id: id ?? this.id,
-          title: title ?? this.title,
-          renamedTitle: renamedTitle ?? this.renamedTitle,
-          path: path ?? this.path,
-          url: url ?? this.url,
-          version: version ?? this.version,
-          description: description ?? this.description);
+        id: id ?? this.id,
+        title: title ?? this.title,
+        renamedTitle: renamedTitle ?? this.renamedTitle,
+        path: path ?? this.path,
+        url: url ?? this.url,
+        version: version ?? this.version,
+        description: description ?? this.description,
+        lastPageOpened: lastPageOpened ?? this.lastPageOpened,
+        folderId: folderId ?? this.folderId,
+        order: order ?? this.order,
+      );
 }

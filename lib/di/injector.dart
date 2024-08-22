@@ -7,9 +7,11 @@ import 'package:docu_fetch/domain/repository/main_repository.dart';
 import 'package:docu_fetch/domain/usecase/delete_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/delete_repository_use_case.dart';
 import 'package:docu_fetch/domain/usecase/download_pdf_use_case.dart';
+import 'package:docu_fetch/domain/usecase/get_local_folder_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_local_pdf_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_local_repository_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_pdf_list_use_case.dart';
+import 'package:docu_fetch/domain/usecase/insert_local_folder_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_repository_use_case.dart';
 import 'package:docu_fetch/domain/usecase/update_last_page_opened_use_case.dart';
@@ -63,5 +65,9 @@ Future<void> initDependencies() async {
   Get.lazyPut(() => DeleteLocalRepositoryUseCase(mainRepository: Get.find()),
       fenix: true);
   Get.lazyPut(() => UpdateLocalPdfUseCase(mainRepository: Get.find()),
+      fenix: true);
+  Get.lazyPut(() => InsertLocalFolderUseCase(mainRepository: Get.find()),
+      fenix: true);
+  Get.lazyPut(() => GetLocalFolderListUseCase(mainRepository: Get.find()),
       fenix: true);
 }

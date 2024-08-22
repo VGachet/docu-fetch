@@ -1,16 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:docu_fetch/data/networking/networking.dart';
 import 'package:docu_fetch/domain/model/download_data.dart';
+import 'package:docu_fetch/domain/model/folder.dart';
 import 'package:docu_fetch/domain/model/pdf.dart';
 import 'package:docu_fetch/domain/model/repository.dart';
 import 'package:docu_fetch/domain/usecase/delete_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/delete_repository_use_case.dart';
 import 'package:docu_fetch/domain/usecase/download_pdf_use_case.dart';
+import 'package:docu_fetch/domain/usecase/get_local_folder_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_local_pdf_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_local_repository_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/get_pdf_list_use_case.dart';
+import 'package:docu_fetch/domain/usecase/insert_local_folder_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_repository_use_case.dart';
 import 'package:docu_fetch/domain/usecase/update_pdf_use_case.dart';
@@ -26,16 +30,19 @@ import 'package:path_provider/path_provider.dart';
 
 class HomeController extends GetxController
     with GetSingleTickerProviderStateMixin {
-  HomeController(
-      {required this.downloadPdfUseCase,
-      required this.getPdfListUseCase,
-      required this.insertLocalPdfUseCase,
-      required this.deleteLocalPdfUseCase,
-      required this.updateLocalPdfUseCase,
-      required this.getLocalPdfListUseCase,
-      required this.insertLocalRepositoryUseCase,
-      required this.getLocalRepositoryListUseCase,
-      required this.deleteLocalRepositoryUseCase});
+  HomeController({
+    required this.downloadPdfUseCase,
+    required this.getPdfListUseCase,
+    required this.insertLocalPdfUseCase,
+    required this.deleteLocalPdfUseCase,
+    required this.updateLocalPdfUseCase,
+    required this.getLocalPdfListUseCase,
+    required this.insertLocalRepositoryUseCase,
+    required this.getLocalRepositoryListUseCase,
+    required this.deleteLocalRepositoryUseCase,
+    required this.insertLocalFolderUseCase,
+    required this.getLocalFolderListUseCase,
+  });
 
   final DownloadPdfUseCase downloadPdfUseCase;
   final GetPdfListUseCase getPdfListUseCase;
@@ -46,16 +53,27 @@ class HomeController extends GetxController
   final InsertLocalRepositoryUseCase insertLocalRepositoryUseCase;
   final GetLocalRepositoryListUseCase getLocalRepositoryListUseCase;
   final DeleteLocalRepositoryUseCase deleteLocalRepositoryUseCase;
+  final InsertLocalFolderUseCase insertLocalFolderUseCase;
+  final GetLocalFolderListUseCase getLocalFolderListUseCase;
 
   final MainController mainController = Get.find();
 
   RxList<Pdf> pdfList = RxList.empty();
+
+  RxList<TreeNode> treeNodeList = RxList.empty();
+
+  RxList<Pdf> pdfAllowingSelection = RxList.empty();
+
+  RxList<Pdf> selectedPdfs = RxList.empty();
+
+  RxBool isCutMode = false.obs;
 
   Rxn<DownloadData> downloadData = Rxn();
 
   final TextEditingController repoJsonUrlController = TextEditingController();
   final TextEditingController repoNameController = TextEditingController();
   final TextEditingController renamePdfController = TextEditingController();
+  final TextEditingController renameFolderController = TextEditingController();
 
   //https://vgachet.dev/wp-content/uploads/test/docu-fetch-test.json
 
@@ -65,7 +83,11 @@ class HomeController extends GetxController
 
   RxBool isValidateButtonDisabled = true.obs;
 
-  RxBool isRenameButtonDisabled = true.obs;
+  RxBool isPdfRenameButtonDisabled = true.obs;
+
+  RxBool isFolderRenameButtonDisabled = true.obs;
+
+  TreeViewController? treeViewController;
 
   @override
   void onReady() async {
@@ -75,7 +97,8 @@ class HomeController extends GetxController
 
     repoJsonUrlController.addListener(validatorFields);
     repoNameController.addListener(validatorFields);
-    renamePdfController.addListener(validatorRenameFields);
+    renamePdfController.addListener(validatorPdfRenameFields);
+    renameFolderController.addListener(validatorFolderRenameFields);
   }
 
   void validatorFields() {
@@ -97,11 +120,19 @@ class HomeController extends GetxController
     }
   }
 
-  void validatorRenameFields() {
+  void validatorPdfRenameFields() {
     if (renamePdfController.text.length > 3) {
-      isRenameButtonDisabled.value = false;
+      isPdfRenameButtonDisabled.value = false;
     } else {
-      isRenameButtonDisabled.value = true;
+      isPdfRenameButtonDisabled.value = true;
+    }
+  }
+
+  void validatorFolderRenameFields() {
+    if (renameFolderController.text.length > 3) {
+      isFolderRenameButtonDisabled.value = false;
+    } else {
+      isFolderRenameButtonDisabled.value = true;
     }
   }
 
@@ -131,40 +162,49 @@ class HomeController extends GetxController
     final pdfListResource = await getPdfListUseCase(repositoryUrl);
 
     if (pdfListResource is Success) {
-      final List<Pdf> downloadedPdfList = pdfListResource.data!;
-      for (final pdf in downloadedPdfList) {
-        downloadData.value!.fileName = pdf.getTitle();
-        downloadData.value!.currentDownloadIndex =
-            downloadedPdfList.indexOf(pdf) + 1;
-        downloadData.value!.numberOfFiles = downloadedPdfList.length;
-        downloadData.refresh();
+      final createFolderResource = await insertLocalFolderUseCase(
+          Folder(title: repoNameController.text, order: 0));
 
-        // Check if the same version of pdf is already downloaded
-        if (pdfList.firstWhereOrNull((element) =>
-                element.url == pdf.url && element.version == pdf.version) !=
-            null) {
-          AlertMessage.show(
-              message: 'pdf_already_downloaded'.trParams({
-            'pdfTitle': pdf.getTitle(),
-            'pdfVersion': '${pdf.version}'
-          }));
-          await Future.delayed(const Duration(seconds: 2));
-          continue;
+      if (createFolderResource is Success) {
+        final List<Pdf> downloadedPdfList = pdfListResource.data!;
+        for (final pdf in downloadedPdfList) {
+          downloadData.value!.fileName = pdf.getTitle();
+          downloadData.value!.currentDownloadIndex =
+              downloadedPdfList.indexOf(pdf) + 1;
+          downloadData.value!.numberOfFiles = downloadedPdfList.length;
+          downloadData.refresh();
+
+          // Check if the same version of pdf is already downloaded
+          if (pdfList.firstWhereOrNull((element) =>
+                  element.url == pdf.url && element.version == pdf.version) !=
+              null) {
+            AlertMessage.show(
+                message: 'pdf_already_downloaded'.trParams({
+              'pdfTitle': pdf.getTitle(),
+              'pdfVersion': '${pdf.version}'
+            }));
+            await Future.delayed(const Duration(milliseconds: 1300));
+            continue;
+          }
+
+          final downloadPdfResource = await downloadPdfUseCase(
+              pdf.copyWith(path: '$localPath/${pdf.title}-${pdf.version}.pdf'));
+
+          if (downloadPdfResource is Success) {
+            await insertLocalPdf(downloadPdfResource.data!.copyWith(
+                folderId: createFolderResource.data!,
+                order: downloadedPdfList.indexOf(pdf)));
+          } else {
+            AlertMessage.show(
+                message: 'error_downloading_pdf'
+                    .trParams({'pdfTitle': pdf.getTitle()}));
+          }
+
+          downloadData.value?.fileName = '';
+          downloadData.refresh();
         }
-
-        final downloadPdfResource = await downloadPdfUseCase(
-            pdf.copyWith(path: '$localPath/${pdf.title}-${pdf.version}.pdf'));
-
-        if (downloadPdfResource is Success) {
-          await insertLocalPdf(downloadPdfResource.data!);
-        } else {
-          AlertMessage.show(
-              message: 'error_downloading_pdf'
-                  .trParams({'pdfTitle': pdf.getTitle()}));
-        }
-
-        downloadData.value?.fileName = '';
-        downloadData.refresh();
+      } else {
+        AlertMessage.show(message: 'error_creating_folder'.tr);
       }
     } else {
       AlertMessage.show(message: 'error_downloading_files'.tr);
@@ -263,6 +303,9 @@ class HomeController extends GetxController
     } else {
       AlertMessage.show(message: 'error_retrieving_pdf_list'.tr);
     }
+
+    treeNodeList.value = await getOrderedFolderAndPdfList();
+    treeNodeList.refresh();
   }
 
   Future<void> deleteLocalPdf(Pdf pdf) async {
@@ -374,11 +417,109 @@ class HomeController extends GetxController
 
         await insertLocalPdf(
             Pdf(title: pdfTitle, path: localFilePath, version: pdfVersion));
-      } catch (e) {
-        print(e);
+      } catch (_) {
         AlertMessage.show(
             message: 'error_saving_pdf'.trParams({'pdfTitle': pdfTitle}));
       }
     }
+  }
+
+  Future<void> createFolder({required String folderName}) async {
+    renameFolderController.clear();
+
+    final insertFolderResource =
+        await insertLocalFolderUseCase(Folder(title: folderName, order: 0));
+
+    if (insertFolderResource is Success) {
+      treeNodeList.value = await getOrderedFolderAndPdfList();
+      treeNodeList.refresh();
+    } else {
+      AlertMessage.show(message: 'error_creating_folder'.tr);
+    }
+  }
+
+  Future<List<TreeNode>> getOrderedFolderAndPdfList() async {
+    final List<TreeNode> treeNodes = [];
+
+    // Retrieve and sort root PDFs
+    final List<Pdf> rootPdfList = pdfList
+        .where((pdf) => pdf.folderId == null)
+        .toList()
+      ..sort((pdf1, pdf2) => pdf1.order.compareTo(pdf2.order));
+
+    // Add root PDFs to tree nodes
+    treeNodes.add(
+        TreeNode.root()..addAll(rootPdfList.map((pdf) => TreeNode(data: pdf))));
+
+    // Retrieve and sort folders
+    final getFolderListResource = await getLocalFolderListUseCase();
+    if (getFolderListResource is Success) {
+      final List<Folder> folderList = getFolderListResource.data!
+        ..sort((folder1, folder2) => folder1.order.compareTo(folder2.order));
+
+      // Build tree structure for each folder
+      for (Folder folder in folderList) {
+        final List<Pdf> currentFolderPdfList = pdfList
+            .where((pdf) => pdf.folderId == folder.id)
+            .toList()
+          ..sort((pdf1, pdf2) => pdf1.order.compareTo(pdf2.order));
+
+        final TreeNode folderNode = TreeNode.root()
+          ..add(TreeNode(data: folder)
+            ..addAll(currentFolderPdfList.map((pdf) => TreeNode(data: pdf))));
+
+        treeNodes.add(folderNode);
+      }
+    }
+
+    return treeNodes;
+  }
+
+  // Method to toggle selection mode and select PDFs in the same folder
+  void toggleSelectionMode(Pdf pdf) {
+    if (pdfAllowingSelection.isNotEmpty) {
+      pdfAllowingSelection.clear();
+      if (selectedPdfs.isNotEmpty) {
+        selectedPdfs.clear();
+      }
+    } else {
+      isCutMode.value = false;
+      selectedPdfs.add(pdf);
+      pdfAllowingSelection.add(pdf);
+      pdfAllowingSelection.addAll(pdfList
+          .where((element) => element.folderId == pdf.folderId)
+          .toList());
+    }
+  }
+
+  void selectPdf(TreeNode node) {
+    if (selectedPdfs.contains(node.data)) {
+      selectedPdfs.remove(node.data);
+    } else {
+      selectedPdfs.add(node.data as Pdf);
+    }
+  }
+
+  void cutSelectedPdfs() {
+    pdfAllowingSelection.clear();
+    isCutMode.value = true;
+  }
+
+  void moveSelectedPdfToFolder(Folder folder) async {
+    for (Pdf pdf in selectedPdfs) {
+      final updatedPdf = pdf.copyWith(folderId: folder.id);
+      final updateLocalPdfResource = await updateLocalPdfUseCase(updatedPdf);
+
+      if (updateLocalPdfResource is Success) {
+        await loadLocalPdfList();
+      } else {
+        AlertMessage.show(
+            message: 'error_moving_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+      }
+    }
+
+    selectedPdfs.clear();
+    pdfAllowingSelection.clear();
+    isCutMode.value = false;
   }
 }

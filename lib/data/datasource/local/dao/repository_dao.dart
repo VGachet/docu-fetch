@@ -7,7 +7,7 @@ abstract class RepositoryDao {
   Future<List<Repository>> findAll();
 
   @Query('SELECT * FROM Repository WHERE id = :id')
-  Stream<Repository?> findPdfById(int id);
+  Future<Repository?> findPdfById(int id);
 
   @insert
   Future<int> insertRepository(Repository repository);

@@ -7,7 +7,7 @@ abstract class PdfDao {
   Future<List<Pdf>> findAll();
 
   @Query('SELECT * FROM Pdf WHERE id = :id')
-  Stream<Pdf?> findPdfById(int id);
+  Future<Pdf?> findPdfById(int id);
 
   @insert
   Future<int> insertPdf(Pdf pdf);

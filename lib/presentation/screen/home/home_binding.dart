@@ -14,6 +14,8 @@ class HomeBinding extends Bindings {
           insertLocalRepositoryUseCase: Get.find(),
           getLocalRepositoryListUseCase: Get.find(),
           deleteLocalRepositoryUseCase: Get.find(),
+          insertLocalFolderUseCase: Get.find(),
+          getLocalFolderListUseCase: Get.find(),
         ));
   }
 }

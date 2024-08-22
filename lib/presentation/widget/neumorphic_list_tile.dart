@@ -1,4 +1,4 @@
-import 'package:docu_fetch/domain/model/TextIcon.dart';
+import 'package:docu_fetch/domain/model/text_icon.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_colors.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +9,18 @@ class NeumorphicListTile extends StatelessWidget {
     this.title,
     this.subtitle,
     this.trailing,
+    this.leading,
     this.onTap,
+    this.onLongPress,
     this.trailingDropdown,
   });
 
   final String? title;
   final String? subtitle;
   final Widget? trailing;
+  final Widget? leading;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final Offset distance = const Offset(2, 2);
   final double blur = 6.0;
   final Map<TextIcon, Function>? trailingDropdown;
@@ -24,9 +28,6 @@ class NeumorphicListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.symmetric(
-            vertical: CustomMargins.margin4,
-            horizontal: CustomMargins.margin16),
         decoration: BoxDecoration(
           color: CustomColors.colorGreyLight,
           borderRadius: BorderRadius.circular(12),
@@ -54,7 +55,7 @@ class NeumorphicListTile extends StatelessWidget {
           subtitle: subtitle != null
               ? Text(subtitle!, style: const TextStyle(color: Colors.black))
               : null,
-          //trailing: trailing,
+          leading: leading,
           trailing: trailingDropdown != null
               ? PopupMenuButton<TextIcon>(
                   elevation: 6,
@@ -79,6 +80,7 @@ class NeumorphicListTile extends StatelessWidget {
                 )
               : trailing,
           onTap: onTap,
+          onLongPress: onLongPress,
         ));
   }
 }

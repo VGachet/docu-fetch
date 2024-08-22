@@ -1,6 +1,7 @@
 import 'package:docu_fetch/data/datasource/local/database.dart';
 import 'package:docu_fetch/data/datasource/remote/response/pdf_dto.dart';
 import 'package:docu_fetch/data/networking/networking.dart';
+import 'package:docu_fetch/domain/model/folder.dart';
 import 'package:docu_fetch/domain/model/pdf.dart';
 import 'package:docu_fetch/domain/model/repository.dart';
 import 'package:docu_fetch/domain/repository/main_repository.dart';
@@ -93,9 +94,7 @@ class MainRepositoryImpl implements MainRepository {
   @override
   Future<Resource<int>> insertLocalRepository(Repository repository) async {
     try {
-      final repositoryId =
-          await database.repositoryDao.insertRepository(repository);
-      return Success(repositoryId);
+      return Success(await database.repositoryDao.insertRepository(repository));
     } catch (_) {
       return const Error(ErrorStatus.unexpected);
     }
@@ -127,6 +126,47 @@ class MainRepositoryImpl implements MainRepository {
     try {
       await database.pdfDao.updatePdf(pdf);
       return const Success(null);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<int>> insertLocalFolder(Folder folder) async {
+    final getFolderListResource = await getLocalFolderList();
+
+    if (getFolderListResource is Error) {
+      return const Error(ErrorStatus.unexpected);
+    }
+
+    final List<Folder> folderList = getFolderListResource.data!;
+    final List<Folder> folderListToUpdate = [];
+
+    for (Folder folder in folderList) {
+      folderListToUpdate.add(folder.copyWith(order: folder.order++));
+    }
+
+    try {
+      await updateLocalFolderList(folderListToUpdate);
+      return Success(await database.folderDao.insertFolder(folder));
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<List<Folder>>> getLocalFolderList() async {
+    try {
+      return Success(await database.folderDao.findAll());
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<void>> updateLocalFolderList(List<Folder> folderList) async {
+    try {
+      return Success(await database.folderDao.updateFolderList(folderList));
     } catch (_) {
       return const Error(ErrorStatus.unexpected);
     }

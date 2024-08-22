@@ -55,6 +55,8 @@ dependencies:
   fluttertoast: ^8.2.7
   #https://pub.dev/packages/file_picker
   file_picker: ^8.1.2
+  #https://pub.dev/packages/animated_tree_view
+  animated_tree_view: ^2.2.1
 
 dev_dependencies:
   flutter_test:

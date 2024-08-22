@@ -22,6 +22,11 @@ mixin CustomTheme {
         ),
         progressIndicatorTheme:
             const ProgressIndicatorThemeData(color: CustomColors.colorBlack),
+        checkboxTheme: CheckboxThemeData(
+          fillColor: WidgetStateProperty.all(CustomColors.colorGreyLight),
+          checkColor: WidgetStateProperty.all(CustomColors.colorWhite),
+          overlayColor: WidgetStateProperty.all(CustomColors.colorGreyLight),
+        ),
       );
 
   //Theme applied when the device is in dark mode
@@ -44,6 +49,11 @@ mixin CustomTheme {
         ),
         progressIndicatorTheme:
             const ProgressIndicatorThemeData(color: CustomColors.colorWhite),
+        checkboxTheme: CheckboxThemeData(
+          fillColor: WidgetStateProperty.all(CustomColors.colorGreyLight),
+          checkColor: WidgetStateProperty.all(CustomColors.colorBlack),
+          overlayColor: WidgetStateProperty.all(CustomColors.colorGreyLight),
+        ),
       );
 
   static TextStyle get title => const TextStyle(

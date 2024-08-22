@@ -76,6 +76,8 @@ class _$AppDatabase extends AppDatabase {
 
   RepositoryDao? _repositoryDaoInstance;
 
+  FolderDao? _folderDaoInstance;
+
   Future<sqflite.Database> open(
     String path,
     List<Migration> migrations, [
@@ -98,9 +100,11 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `renamedTitle` TEXT, `path` TEXT, `url` TEXT, `version` REAL NOT NULL, `description` TEXT, `lastPageOpened` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `renamedTitle` TEXT, `path` TEXT, `url` TEXT, `version` REAL NOT NULL, `description` TEXT, `lastPageOpened` INTEGER NOT NULL, `folderId` INTEGER, `order` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Repository` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `url` TEXT NOT NULL, `name` TEXT)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `Folder` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `parentFolder` INTEGER, `order` INTEGER NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -117,13 +121,18 @@ class _$AppDatabase extends AppDatabase {
   RepositoryDao get repositoryDao {
     return _repositoryDaoInstance ??= _$RepositoryDao(database, changeListener);
   }
+
+  @override
+  FolderDao get folderDao {
+    return _folderDaoInstance ??= _$FolderDao(database, changeListener);
+  }
 }
 
 class _$PdfDao extends PdfDao {
   _$PdfDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database, changeListener),
+  )   : _queryAdapter = QueryAdapter(database),
         _pdfInsertionAdapter = InsertionAdapter(
             database,
             'Pdf',
@@ -135,9 +144,10 @@ class _$PdfDao extends PdfDao {
                   'url': item.url,
                   'version': item.version,
                   'description': item.description,
-                  'lastPageOpened': item.lastPageOpened
-                },
-            changeListener),
+                  'lastPageOpened': item.lastPageOpened,
+                  'folderId': item.folderId,
+                  'order': item.order
+                }),
         _pdfUpdateAdapter = UpdateAdapter(
             database,
             'Pdf',
@@ -150,9 +160,10 @@ class _$PdfDao extends PdfDao {
                   'url': item.url,
                   'version': item.version,
                   'description': item.description,
-                  'lastPageOpened': item.lastPageOpened
-                },
-            changeListener),
+                  'lastPageOpened': item.lastPageOpened,
+                  'folderId': item.folderId,
+                  'order': item.order
+                }),
         _pdfDeletionAdapter = DeletionAdapter(
             database,
             'Pdf',
@@ -165,9 +176,10 @@ class _$PdfDao extends PdfDao {
                   'url': item.url,
                   'version': item.version,
                   'description': item.description,
-                  'lastPageOpened': item.lastPageOpened
-                },
-            changeListener);
+                  'lastPageOpened': item.lastPageOpened,
+                  'folderId': item.folderId,
+                  'order': item.order
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -191,12 +203,14 @@ class _$PdfDao extends PdfDao {
             path: row['path'] as String?,
             url: row['url'] as String?,
             version: row['version'] as double,
-            description: row['description'] as String?));
+            description: row['description'] as String?,
+            folderId: row['folderId'] as int?,
+            order: row['order'] as int));
   }
 
   @override
-  Stream<Pdf?> findPdfById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM Pdf WHERE id = ?1',
+  Future<Pdf?> findPdfById(int id) async {
+    return _queryAdapter.query('SELECT * FROM Pdf WHERE id = ?1',
         mapper: (Map<String, Object?> row) => Pdf(
             id: row['id'] as int?,
             title: row['title'] as String,
@@ -204,10 +218,10 @@ class _$PdfDao extends PdfDao {
             path: row['path'] as String?,
             url: row['url'] as String?,
             version: row['version'] as double,
-            description: row['description'] as String?),
-        arguments: [id],
-        queryableName: 'Pdf',
-        isView: false);
+            description: row['description'] as String?,
+            folderId: row['folderId'] as int?,
+            order: row['order'] as int),
+        arguments: [id]);
   }
 
   @override
@@ -241,7 +255,7 @@ class _$RepositoryDao extends RepositoryDao {
   _$RepositoryDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database, changeListener),
+  )   : _queryAdapter = QueryAdapter(database),
         _repositoryInsertionAdapter = InsertionAdapter(
             database,
             'Repository',
@@ -249,8 +263,7 @@ class _$RepositoryDao extends RepositoryDao {
                   'id': item.id,
                   'url': item.url,
                   'name': item.name
-                },
-            changeListener),
+                }),
         _repositoryDeletionAdapter = DeletionAdapter(
             database,
             'Repository',
@@ -259,8 +272,7 @@ class _$RepositoryDao extends RepositoryDao {
                   'id': item.id,
                   'url': item.url,
                   'name': item.name
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -282,15 +294,13 @@ class _$RepositoryDao extends RepositoryDao {
   }
 
   @override
-  Stream<Repository?> findPdfById(int id) {
-    return _queryAdapter.queryStream('SELECT * FROM Repository WHERE id = ?1',
+  Future<Repository?> findPdfById(int id) async {
+    return _queryAdapter.query('SELECT * FROM Repository WHERE id = ?1',
         mapper: (Map<String, Object?> row) => Repository(
             url: row['url'] as String,
             id: row['id'] as int?,
             name: row['name'] as String?),
-        arguments: [id],
-        queryableName: 'Repository',
-        isView: false);
+        arguments: [id]);
   }
 
   @override
@@ -302,5 +312,96 @@ class _$RepositoryDao extends RepositoryDao {
   @override
   Future<int> deleteRepository(Repository repository) {
     return _repositoryDeletionAdapter.deleteAndReturnChangedRows(repository);
+  }
+}
+
+class _$FolderDao extends FolderDao {
+  _$FolderDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _folderInsertionAdapter = InsertionAdapter(
+            database,
+            'Folder',
+            (Folder item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'parentFolder': item.parentFolder,
+                  'order': item.order
+                }),
+        _folderUpdateAdapter = UpdateAdapter(
+            database,
+            'Folder',
+            ['id'],
+            (Folder item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'parentFolder': item.parentFolder,
+                  'order': item.order
+                }),
+        _folderDeletionAdapter = DeletionAdapter(
+            database,
+            'Folder',
+            ['id'],
+            (Folder item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'parentFolder': item.parentFolder,
+                  'order': item.order
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<Folder> _folderInsertionAdapter;
+
+  final UpdateAdapter<Folder> _folderUpdateAdapter;
+
+  final DeletionAdapter<Folder> _folderDeletionAdapter;
+
+  @override
+  Future<List<Folder>> findAll() async {
+    return _queryAdapter.queryList('SELECT * FROM Folder',
+        mapper: (Map<String, Object?> row) => Folder(
+            title: row['title'] as String,
+            order: row['order'] as int,
+            id: row['id'] as int?,
+            parentFolder: row['parentFolder'] as int?));
+  }
+
+  @override
+  Future<Folder?> findFolderById(int id) async {
+    return _queryAdapter.query('SELECT * FROM Folder WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => Folder(
+            title: row['title'] as String,
+            order: row['order'] as int,
+            id: row['id'] as int?,
+            parentFolder: row['parentFolder'] as int?),
+        arguments: [id]);
+  }
+
+  @override
+  Future<int> insertFolder(Folder folder) {
+    return _folderInsertionAdapter.insertAndReturnId(
+        folder, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateFolder(Folder folder) async {
+    await _folderUpdateAdapter.update(folder, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> updateFolderList(List<Folder> folderList) async {
+    await _folderUpdateAdapter.updateList(
+        folderList, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<int> deleteFolder(Folder folder) {
+    return _folderDeletionAdapter.deleteAndReturnChangedRows(folder);
   }
 }
