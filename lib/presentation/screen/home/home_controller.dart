@@ -312,7 +312,6 @@ class HomeController extends GetxController
     }
 
     treeNodeList.value = await getOrderedFolderAndPdfList();
-    treeNodeList.refresh();
   }
 
   Future<void> deleteLocalPdf(Pdf pdf) async {
@@ -405,8 +404,6 @@ class HomeController extends GetxController
       final String pdfTitle =
           file.name.substring(0, file.name.lastIndexOf('.'));
 
-      const double pdfVersion = 1.0;
-
       final String localPdfDirectoryPath =
           '${(await getApplicationDocumentsDirectory()).path}/pdfs';
 
@@ -414,16 +411,14 @@ class HomeController extends GetxController
         Directory(localPdfDirectoryPath).createSync();
       }
 
-      final String localFilePath =
-          '$localPdfDirectoryPath/$pdfTitle-$pdfVersion.pdf';
+      final String localFilePath = '$localPdfDirectoryPath/$pdfTitle.pdf';
 
       try {
         //PDF file is copied to the app's document directory
         final localCreatedFile = await File(localFilePath).create();
         await localCreatedFile.writeAsBytes(await file.xFile.readAsBytes());
 
-        await insertLocalPdf(
-            Pdf(title: pdfTitle, path: localFilePath, version: pdfVersion));
+        await insertLocalPdf(Pdf(title: pdfTitle, path: localFilePath));
       } catch (_) {
         AlertMessage.show(
             message: 'error_saving_pdf'.trParams({'pdfTitle': pdfTitle}));
@@ -439,7 +434,6 @@ class HomeController extends GetxController
 
     if (insertFolderResource is Success) {
       treeNodeList.value = await getOrderedFolderAndPdfList();
-      treeNodeList.refresh();
     } else {
       AlertMessage.show(message: 'error_creating_folder'.tr);
     }
@@ -454,9 +448,11 @@ class HomeController extends GetxController
         .toList()
       ..sort((pdf1, pdf2) => pdf1.order.compareTo(pdf2.order));
 
-    // Add root PDFs to tree nodes
-    treeNodes.add(
-        TreeNode.root()..addAll(rootPdfList.map((pdf) => TreeNode(data: pdf))));
+    if (rootPdfList.isNotEmpty) {
+      // Add root PDFs to tree nodes
+      treeNodes.add(TreeNode.root()
+        ..addAll(rootPdfList.map((pdf) => TreeNode(data: pdf))));
+    }
 
     // Retrieve and sort folders
     final getFolderListResource = await getLocalFolderListUseCase();

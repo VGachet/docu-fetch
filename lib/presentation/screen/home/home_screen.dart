@@ -134,7 +134,9 @@ class HomeScreen extends StatelessWidget {
       padding: const EdgeInsets.all(CustomMargins.margin8),
       child: NeumorphicListTile(
         title: pdf.getTitle(),
-        subtitle: 'version'.trParams({'version': '${pdf.version}'}),
+        subtitle: pdf.version != null
+            ? 'version'.trParams({'version': '${pdf.version}'})
+            : null,
         leading: controller.pdfAllowingSelection.contains(pdf)
             ? Checkbox(
                 value: controller.selectedPdfs.contains(pdf),

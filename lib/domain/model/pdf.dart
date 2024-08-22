@@ -8,7 +8,7 @@ class Pdf {
   final String? renamedTitle;
   final String? path;
   final String? url;
-  final double version;
+  final double? version;
   final String? description;
   int lastPageOpened;
   int? folderId;
@@ -20,7 +20,7 @@ class Pdf {
       this.renamedTitle,
       this.path,
       this.url,
-      required this.version,
+      this.version,
       this.description,
       this.lastPageOpened = 0,
       this.folderId,
