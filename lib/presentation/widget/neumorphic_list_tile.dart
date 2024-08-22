@@ -13,6 +13,7 @@ class NeumorphicListTile extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.trailingDropdown,
+    this.trailingDropdownPadding = 0,
   });
 
   final String? title;
@@ -24,6 +25,7 @@ class NeumorphicListTile extends StatelessWidget {
   final Offset distance = const Offset(2, 2);
   final double blur = 6.0;
   final Map<TextIcon, Function>? trailingDropdown;
+  final double trailingDropdownPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -57,27 +59,30 @@ class NeumorphicListTile extends StatelessWidget {
               : null,
           leading: leading,
           trailing: trailingDropdown != null
-              ? PopupMenuButton<TextIcon>(
-                  elevation: 6,
-                  color: CustomColors.colorGreyLight,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  offset: const Offset(16, 45),
-                  onSelected: (TextIcon value) {
-                    trailingDropdown?[value]!();
-                  },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<TextIcon>>[
-                    for (TextIcon textIcon in trailingDropdown!.keys)
-                      PopupMenuItem<TextIcon>(
-                        value: textIcon,
-                        child: ListTile(
-                          leading: Icon(textIcon.icon),
-                          title: Text(textIcon.text),
+              ? Row(mainAxisSize: MainAxisSize.min, children: [
+                  PopupMenuButton<TextIcon>(
+                    elevation: 6,
+                    color: CustomColors.colorGreyLight,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    offset: const Offset(16, 45),
+                    onSelected: (TextIcon value) {
+                      trailingDropdown?[value]!();
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<TextIcon>>[
+                      for (TextIcon textIcon in trailingDropdown!.keys)
+                        PopupMenuItem<TextIcon>(
+                          value: textIcon,
+                          child: ListTile(
+                            leading: Icon(textIcon.icon),
+                            title: Text(textIcon.text),
+                          ),
                         ),
-                      ),
-                  ],
-                )
+                    ],
+                  ),
+                  SizedBox(width: trailingDropdownPadding),
+                ])
               : trailing,
           onTap: onTap,
           onLongPress: onLongPress,

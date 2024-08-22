@@ -45,25 +45,34 @@ class HomeScreen extends StatelessWidget {
                         style: CustomTheme.body, textAlign: TextAlign.center)),
               ))
           : Column(children: [
-              controller.selectedPdfs.isNotEmpty
+              Obx(() => controller.selectedPdfs.isNotEmpty
                   ? Container(
                       color: CustomColors.colorGreyLight,
                       padding: const EdgeInsets.all(CustomMargins.margin8),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          const Spacer(),
                           Obx(
                             () => NeumorphicButton(
                               onTap: controller.cutSelectedPdfs,
                               text: 'cut'.tr,
                               isDisabled: controller.isCutMode.value,
                               icon: Icons.content_cut,
+                              disabledColor: CustomColors.colorBlue,
                             ),
                           ),
+                          const SizedBox(width: CustomMargins.margin8),
+                          controller.isCutMode.value
+                              ? NeumorphicButton(
+                                  onTap: controller.cancelCutMode,
+                                  text: 'cancel'.tr,
+                                  icon: Icons.cancel_outlined,
+                                )
+                              : const SizedBox()
                         ],
                       ),
                     )
-                  : const SizedBox(),
+                  : const SizedBox()),
               Expanded(
                   child: RefreshIndicator(
                       onRefresh: controller.loadLocalPdfList,
@@ -78,8 +87,10 @@ class HomeScreen extends StatelessWidget {
                               expansionIndicatorBuilder: (context, node) =>
                                   ChevronIndicator.rightDown(
                                 tree: node,
-                                color: Colors.blue[700],
-                                padding: const EdgeInsets.all(8),
+                                alignment: Alignment.centerRight,
+                                color: CustomColors.colorBlack,
+                                padding: const EdgeInsets.all(
+                                    CustomMargins.margin16),
                               ),
                               indentation: const Indentation(
                                   style: IndentStyle.squareJoint),
@@ -125,13 +136,13 @@ class HomeScreen extends StatelessWidget {
             : null,
         onLongPress: () {
           // Toggle selection mode and select PDFs in the same folder
-          controller.toggleSelectionMode(pdf);
+          controller.toggleSelectionMode(pdf: pdf);
         },
         trailingDropdown: {
-          TextIcon(text: 'open'.tr, icon: Icons.open_in_new_outlined): () {
-            Get.toNamed(Routes.pdf, arguments: pdf);
-          },
+          TextIcon(text: 'open'.tr, icon: Icons.open_in_new_outlined): () =>
+              Get.toNamed(Routes.pdf, arguments: pdf),
           TextIcon(text: 'rename'.tr, icon: Icons.edit_outlined): () {
+            controller.renamePdfController.text = pdf.getTitle();
             showRenamePdfDialog(pdf);
           },
           TextIcon(text: 'delete'.tr, icon: Icons.delete_outline): () async {
@@ -148,6 +159,7 @@ class HomeScreen extends StatelessWidget {
       child: Obx(
         () => NeumorphicListTile(
             title: folder.title,
+            trailingDropdownPadding: CustomMargins.margin16,
             trailingDropdown: {
               TextIcon(text: 'rename'.tr, icon: Icons.edit_outlined): () {
                 controller.renameFolderController.text = folder.title;

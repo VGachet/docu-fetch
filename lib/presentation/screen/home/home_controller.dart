@@ -479,7 +479,7 @@ class HomeController extends GetxController
   }
 
   // Method to toggle selection mode and select PDFs in the same folder
-  void toggleSelectionMode(Pdf pdf) {
+  void toggleSelectionMode({Pdf? pdf}) {
     if (pdfAllowingSelection.isNotEmpty) {
       pdfAllowingSelection.clear();
       if (selectedPdfs.isNotEmpty) {
@@ -487,11 +487,12 @@ class HomeController extends GetxController
       }
     } else {
       isCutMode.value = false;
-      selectedPdfs.add(pdf);
-      pdfAllowingSelection.add(pdf);
-      pdfAllowingSelection.addAll(pdfList
-          .where((element) => element.folderId == pdf.folderId)
-          .toList());
+      if (pdf != null) {
+        pdfAllowingSelection.add(pdf);
+        pdfAllowingSelection.addAll(pdfList
+            .where((element) => element.folderId == pdf.folderId)
+            .toList());
+      }
     }
   }
 
@@ -506,6 +507,12 @@ class HomeController extends GetxController
   void cutSelectedPdfs() {
     pdfAllowingSelection.clear();
     isCutMode.value = true;
+  }
+
+  void cancelCutMode() {
+    pdfAllowingSelection.clear();
+    isCutMode.value = false;
+    selectedPdfs.clear();
   }
 
   void moveSelectedPdfToFolder(Folder folder) async {

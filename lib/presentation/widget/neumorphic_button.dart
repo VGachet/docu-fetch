@@ -14,6 +14,7 @@ class NeumorphicButton extends StatelessWidget {
     this.isRound = false,
     this.text,
     this.isDisabled = false,
+    this.disabledColor = CustomColors.colorGreyLight,
   });
 
   final RxBool isElevated = false.obs;
@@ -25,6 +26,7 @@ class NeumorphicButton extends StatelessWidget {
   final bool isRound;
   final String? text;
   final bool isDisabled;
+  final Color disabledColor;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class NeumorphicButton extends StatelessWidget {
           height: text != null ? null : size.width,
           width: text != null ? null : size.height,
           decoration: BoxDecoration(
-            color: CustomColors.colorGreyLight,
+            color: isDisabled ? disabledColor : CustomColors.colorGreyLight,
             borderRadius: BorderRadius.circular(isRound ? size.width : 12),
             boxShadow: [
               BoxShadow(
