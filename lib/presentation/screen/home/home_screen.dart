@@ -180,6 +180,8 @@ class HomeScreen extends StatelessWidget {
       child: Obx(
         () => NeumorphicListTile(
             title: folder.title,
+            leading: const Icon(Icons.folder_outlined,
+                color: CustomColors.colorBlack),
             trailingDropdownPadding: CustomMargins.margin16,
             trailingDropdown: {
               TextIcon(text: 'rename'.tr, icon: Icons.edit_outlined): () {
