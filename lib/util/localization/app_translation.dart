@@ -45,7 +45,7 @@ final Map<String, String> enUS = {
       'Are you sure you want to delete the PDF @pdfTitle?',
   'all_documents': 'All documents',
   'create_folder': 'Create a new folder',
-  'enter_folder_name': 'Enter folder name',
+  'enter_folder_name': 'Enter a folder name',
   'enter_new_folder_name': 'Enter a new name for the folder',
   'error_update_last_page_opened': 'Error updating the last page opened',
 };
@@ -93,7 +93,7 @@ final Map<String, String> fr = {
       'Êtes-vous sûr de vouloir supprimer le PDF @pdfTitle ?',
   'all_documents': 'Tous les documents',
   'create_folder': 'Créer un nouveau dossier',
-  'enter_folder_name': 'Entrer nom de dossier',
+  'enter_folder_name': 'Entrer un nom de dossier',
   'enter_new_folder_name': 'Entrer un nouveau nom pour le dossier',
   'error_update_last_page_opened':
       "Erreur lors de la mise à jour de la dernière page ouverte",

@@ -17,6 +17,7 @@ import 'package:docu_fetch/domain/usecase/get_pdf_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_folder_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_repository_use_case.dart';
+import 'package:docu_fetch/domain/usecase/update_local_folder_use_case.dart';
 import 'package:docu_fetch/domain/usecase/update_pdf_use_case.dart';
 import 'package:docu_fetch/presentation/main_controller.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
@@ -42,6 +43,7 @@ class HomeController extends GetxController
     required this.deleteLocalRepositoryUseCase,
     required this.insertLocalFolderUseCase,
     required this.getLocalFolderListUseCase,
+    required this.updateLocalFolderUseCase,
   });
 
   final DownloadPdfUseCase downloadPdfUseCase;
@@ -55,6 +57,7 @@ class HomeController extends GetxController
   final DeleteLocalRepositoryUseCase deleteLocalRepositoryUseCase;
   final InsertLocalFolderUseCase insertLocalFolderUseCase;
   final GetLocalFolderListUseCase getLocalFolderListUseCase;
+  final UpdateLocalLocalFolderUseCase updateLocalFolderUseCase;
 
   final MainController mainController = Get.find();
 
@@ -521,5 +524,20 @@ class HomeController extends GetxController
     selectedPdfs.clear();
     pdfAllowingSelection.clear();
     isCutMode.value = false;
+  }
+
+  Future<void> renameFolder(Folder folder) async {
+    final updateFolderResource = await updateLocalFolderUseCase(
+        folder.copyWith(title: renameFolderController.text));
+
+    if (updateFolderResource is Success) {
+      await loadLocalPdfList();
+    } else {
+      AlertMessage.show(
+          message:
+              'error_renaming_folder'.trParams({'folderTitle': folder.title}));
+    }
+
+    renameFolderController.clear();
   }
 }

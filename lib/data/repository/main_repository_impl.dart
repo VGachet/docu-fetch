@@ -171,4 +171,13 @@ class MainRepositoryImpl implements MainRepository {
       return const Error(ErrorStatus.unexpected);
     }
   }
+
+  @override
+  Future<Resource<void>> updateLocalFolder(Folder folder) async {
+    try {
+      return Success(await database.folderDao.updateFolder(folder));
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
 }

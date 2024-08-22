@@ -149,7 +149,10 @@ class HomeScreen extends StatelessWidget {
         () => NeumorphicListTile(
             title: folder.title,
             trailingDropdown: {
-              TextIcon(text: 'rename'.tr, icon: Icons.edit_outlined): () {},
+              TextIcon(text: 'rename'.tr, icon: Icons.edit_outlined): () {
+                controller.renameFolderController.text = folder.title;
+                showRenameFolderDialog(folder: folder);
+              },
               TextIcon(text: 'delete'.tr, icon: Icons.delete_outline): () {},
             },
             onTap: controller.isCutMode.value
@@ -378,7 +381,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void showRenameFolderDialog() {
+  void showRenameFolderDialog({Folder? folder}) {
     showDialog(
       context: Get.overlayContext!,
       builder: (context) => AlertDialog(
@@ -394,7 +397,9 @@ class HomeScreen extends StatelessWidget {
               controller: controller.renameFolderController,
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
-                labelText: 'enter_new_folder_name'.tr,
+                labelText: folder != null
+                    ? 'enter_new_folder_name'.tr
+                    : 'enter_folder_name'.tr,
                 border: const OutlineInputBorder(),
                 labelStyle: CustomTheme.body,
                 enabledBorder: const OutlineInputBorder(
@@ -419,11 +424,15 @@ class HomeScreen extends StatelessWidget {
             () => NeumorphicButton(
               onTap: () async {
                 Get.back();
-                await controller.createFolder(
-                    folderName: controller.renameFolderController.text);
+                if (folder != null) {
+                  await controller.renameFolder(folder);
+                } else {
+                  await controller.createFolder(
+                      folderName: controller.renameFolderController.text);
+                }
               },
               isDisabled: controller.isFolderRenameButtonDisabled.value,
-              text: 'rename'.tr,
+              text: folder != null ? 'rename'.tr : 'validate'.tr,
             ),
           ),
         ],

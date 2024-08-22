@@ -15,6 +15,8 @@ import 'package:docu_fetch/domain/usecase/insert_local_folder_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_repository_use_case.dart';
 import 'package:docu_fetch/domain/usecase/update_last_page_opened_use_case.dart';
+import 'package:docu_fetch/domain/usecase/update_local_folder_list_use_case.dart';
+import 'package:docu_fetch/domain/usecase/update_local_folder_use_case.dart';
 import 'package:docu_fetch/domain/usecase/update_pdf_use_case.dart';
 import 'package:docu_fetch/presentation/main_controller.dart';
 import 'package:docu_fetch/presentation/widget/expandable_fab/expandable_fab_controller.dart';
@@ -69,5 +71,10 @@ Future<void> initDependencies() async {
   Get.lazyPut(() => InsertLocalFolderUseCase(mainRepository: Get.find()),
       fenix: true);
   Get.lazyPut(() => GetLocalFolderListUseCase(mainRepository: Get.find()),
+      fenix: true);
+  Get.lazyPut(
+      () => UpdateLocalLocalFolderListUseCase(mainRepository: Get.find()),
+      fenix: true);
+  Get.lazyPut(() => UpdateLocalLocalFolderUseCase(mainRepository: Get.find()),
       fenix: true);
 }
