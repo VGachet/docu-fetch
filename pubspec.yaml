@@ -57,6 +57,8 @@ dependencies:
   file_picker: ^8.1.2
   #https://pub.dev/packages/animated_tree_view
   animated_tree_view: ^2.2.1
+  #https://pub.dev/packages/url_launcher
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:

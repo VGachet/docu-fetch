@@ -53,6 +53,7 @@ final Map<String, String> enUS = {
       'Are you sure you want to delete the folder @folderTitle?',
   'delete_selected_pdfs_confirmation':
       'Are you sure you want to delete the selected PDFs?',
+  'docufetch_tutorial': 'DocuFetch Tutorial',
 };
 
 final Map<String, String> fr = {
@@ -108,4 +109,5 @@ final Map<String, String> fr = {
       'Êtes-vous sûr de vouloir supprimer le dossier @folderTitle ?',
   'delete_selected_pdfs_confirmation':
       'Êtes-vous sûr de vouloir supprimer les PDF sélectionnés ?',
+  'docufetch_tutorial': 'Tutoriel DocuFetch',
 };

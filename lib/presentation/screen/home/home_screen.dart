@@ -12,8 +12,10 @@ import 'package:docu_fetch/presentation/widget/expandable_fab/expandable_fab.dar
 import 'package:docu_fetch/presentation/widget/neumorphic_button.dart';
 import 'package:docu_fetch/presentation/widget/neumorphic_list_tile.dart';
 import 'package:docu_fetch/presentation/widget/page_container.dart';
+import 'package:docu_fetch/util/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -31,6 +33,7 @@ class HomeScreen extends StatelessWidget {
           'add_pdf_from_file'.tr: controller.pickPdfFromDevice,
           'repository_list'.tr: showRepositoryListDialog,
           'create_folder'.tr: showRenameFolderDialog,
+          'docufetch_tutorial'.tr: () => launchUrlString(Constants.readMeUrl),
         },
       ),
       body: Obx(() => controller.treeNodeList.isEmpty
