@@ -303,7 +303,7 @@ class HomeController extends GetxController
 
   Future<void> loadLocalPdfList() async {
     pdfList.clear();
-    final localPdfListResource = await getLocalPdfListUseCase();
+    final localPdfListResource = await getLocalPdfListUseCase(null);
 
     if (localPdfListResource is Success) {
       pdfList.addAll(localPdfListResource.data!);
@@ -455,7 +455,7 @@ class HomeController extends GetxController
     }
 
     // Retrieve and sort folders
-    final getFolderListResource = await getLocalFolderListUseCase();
+    final getFolderListResource = await getLocalFolderListUseCase(null);
     if (getFolderListResource is Success) {
       final List<Folder> folderList = getFolderListResource.data!
         ..sort((folder1, folder2) => folder1.order.compareTo(folder2.order));

@@ -227,6 +227,39 @@ class _$PdfDao extends PdfDao {
   }
 
   @override
+  Future<List<Pdf>> findPdfListByFolderId(int folderId) async {
+    return _queryAdapter.queryList('SELECT * FROM Pdf WHERE folderId = ?1',
+        mapper: (Map<String, Object?> row) => Pdf(
+            id: row['id'] as int?,
+            title: row['title'] as String,
+            renamedTitle: row['renamedTitle'] as String?,
+            path: row['path'] as String?,
+            url: row['url'] as String?,
+            version: row['version'] as double?,
+            description: row['description'] as String?,
+            lastPageOpened: row['lastPageOpened'] as int,
+            folderId: row['folderId'] as int?,
+            order: row['order'] as int),
+        arguments: [folderId]);
+  }
+
+  @override
+  Future<List<Pdf>> findRootPdfList() async {
+    return _queryAdapter.queryList('SELECT * FROM Pdf WHERE folderId IS NULL',
+        mapper: (Map<String, Object?> row) => Pdf(
+            id: row['id'] as int?,
+            title: row['title'] as String,
+            renamedTitle: row['renamedTitle'] as String?,
+            path: row['path'] as String?,
+            url: row['url'] as String?,
+            version: row['version'] as double?,
+            description: row['description'] as String?,
+            lastPageOpened: row['lastPageOpened'] as int,
+            folderId: row['folderId'] as int?,
+            order: row['order'] as int));
+  }
+
+  @override
   Future<void> updateLastPageOpened(
     int lastPage,
     int id,
@@ -383,6 +416,29 @@ class _$FolderDao extends FolderDao {
             id: row['id'] as int?,
             parentFolder: row['parentFolder'] as int?),
         arguments: [id]);
+  }
+
+  @override
+  Future<List<Folder>> findFolderListByParentId(int parentId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM Folder WHERE parentFolder = ?1',
+        mapper: (Map<String, Object?> row) => Folder(
+            title: row['title'] as String,
+            order: row['order'] as int,
+            id: row['id'] as int?,
+            parentFolder: row['parentFolder'] as int?),
+        arguments: [parentId]);
+  }
+
+  @override
+  Future<List<Folder>> findRootFolderList() async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM Folder WHERE parentFolder IS NULL',
+        mapper: (Map<String, Object?> row) => Folder(
+            title: row['title'] as String,
+            order: row['order'] as int,
+            id: row['id'] as int?,
+            parentFolder: row['parentFolder'] as int?));
   }
 
   @override

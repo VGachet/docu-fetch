@@ -9,6 +9,12 @@ abstract class PdfDao {
   @Query('SELECT * FROM Pdf WHERE id = :id')
   Future<Pdf?> findPdfById(int id);
 
+  @Query('SELECT * FROM Pdf WHERE folderId = :folderId')
+  Future<List<Pdf>> findPdfListByFolderId(int folderId);
+
+  @Query('SELECT * FROM Pdf WHERE folderId IS NULL')
+  Future<List<Pdf>> findRootPdfList();
+
   @insert
   Future<int> insertPdf(Pdf pdf);
 

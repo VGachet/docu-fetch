@@ -9,6 +9,12 @@ abstract class FolderDao {
   @Query('SELECT * FROM Folder WHERE id = :id')
   Future<Folder?> findFolderById(int id);
 
+  @Query('SELECT * FROM Folder WHERE parentFolder = :parentId')
+  Future<List<Folder>> findFolderListByParentId(int parentId);
+
+  @Query('SELECT * FROM Folder WHERE parentFolder IS NULL')
+  Future<List<Folder>> findRootFolderList();
+
   @insert
   Future<int> insertFolder(Folder folder);
 
