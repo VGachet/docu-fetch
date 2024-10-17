@@ -54,6 +54,10 @@ final Map<String, String> enUS = {
   'delete_selected_pdfs_confirmation':
       'Are you sure you want to delete the selected PDFs?',
   'docufetch_tutorial': 'DocuFetch Tutorial',
+  'error_inserting_repository': 'Error inserting the repository',
+  'display_unsorted_pdf': 'Display all PDF',
+  'display_sorted_pdf': 'Display sorted PDF',
+  'back': 'Back',
 };
 
 final Map<String, String> fr = {
@@ -110,4 +114,8 @@ final Map<String, String> fr = {
   'delete_selected_pdfs_confirmation':
       'Êtes-vous sûr de vouloir supprimer les PDF sélectionnés ?',
   'docufetch_tutorial': 'Tutoriel DocuFetch',
+  'error_inserting_repository': 'Erreur lors de l\'insertion du dépôt',
+  'display_unsorted_pdf': 'Afficher tout les PDF',
+  'display_sorted_pdf': 'Afficher les PDF triés',
+  'back': 'Retour',
 };

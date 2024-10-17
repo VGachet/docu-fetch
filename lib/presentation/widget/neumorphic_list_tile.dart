@@ -14,6 +14,7 @@ class NeumorphicListTile extends StatelessWidget {
     this.onLongPress,
     this.trailingDropdown,
     this.trailingDropdownPadding = 0,
+    this.onDismissed,
   });
 
   final String? title;
@@ -26,66 +27,82 @@ class NeumorphicListTile extends StatelessWidget {
   final double blur = 6.0;
   final Map<TextIcon, Function>? trailingDropdown;
   final double trailingDropdownPadding;
+  final DismissDirectionCallback? onDismissed;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          color: CustomColors.colorGreyLight,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: CustomColors.colorGrey,
-              offset: distance,
-              blurRadius: blur,
-              spreadRadius: 1,
-            ),
-            BoxShadow(
-              color: CustomColors.colorGrey,
-              offset: distance,
-              blurRadius: blur,
-              spreadRadius: 1,
-            )
-          ],
+    return Dismissible(
+        key: UniqueKey(),
+        onDismissed: onDismissed,
+        background: Container(
+          color: Colors.red,
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: const Icon(Icons.delete, color: Colors.white),
         ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16, vertical: CustomMargins.margin8),
-          title: title != null
-              ? Text(title!, style: const TextStyle(color: Colors.black))
-              : null,
-          subtitle: subtitle != null
-              ? Text(subtitle!, style: const TextStyle(color: Colors.black))
-              : null,
-          leading: leading,
-          trailing: trailingDropdown != null
-              ? Row(mainAxisSize: MainAxisSize.min, children: [
-                  PopupMenuButton<TextIcon>(
-                    elevation: 6,
-                    color: CustomColors.colorGreyLight,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    offset: const Offset(16, 45),
-                    onSelected: (TextIcon value) {
-                      trailingDropdown?[value]!();
-                    },
-                    itemBuilder: (BuildContext context) =>
-                        <PopupMenuEntry<TextIcon>>[
-                      for (TextIcon textIcon in trailingDropdown!.keys)
-                        PopupMenuItem<TextIcon>(
-                          value: textIcon,
-                          child: ListTile(
-                            leading: Icon(textIcon.icon),
-                            title: Text(textIcon.text),
-                          ),
-                        ),
-                    ],
-                  ),
-                  SizedBox(width: trailingDropdownPadding),
-                ])
-              : trailing,
-          onTap: onTap,
-          onLongPress: onLongPress,
-        ));
+        secondaryBackground: Container(
+          color: Colors.red,
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: const Icon(Icons.delete, color: Colors.white),
+        ),
+        child: Container(
+            decoration: BoxDecoration(
+              color: CustomColors.colorGreyLight,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: CustomColors.colorGrey,
+                  offset: distance,
+                  blurRadius: blur,
+                  spreadRadius: 1,
+                ),
+                BoxShadow(
+                  color: CustomColors.colorGrey,
+                  offset: distance,
+                  blurRadius: blur,
+                  spreadRadius: 1,
+                )
+              ],
+            ),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: CustomMargins.margin8),
+              title: title != null
+                  ? Text(title!, style: const TextStyle(color: Colors.black))
+                  : null,
+              subtitle: subtitle != null
+                  ? Text(subtitle!, style: const TextStyle(color: Colors.black))
+                  : null,
+              leading: leading,
+              trailing: trailingDropdown != null
+                  ? Row(mainAxisSize: MainAxisSize.min, children: [
+                      PopupMenuButton<TextIcon>(
+                        elevation: 6,
+                        color: CustomColors.colorGreyLight,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        offset: const Offset(16, 45),
+                        onSelected: (TextIcon value) {
+                          trailingDropdown?[value]!();
+                        },
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<TextIcon>>[
+                          for (TextIcon textIcon in trailingDropdown!.keys)
+                            PopupMenuItem<TextIcon>(
+                              value: textIcon,
+                              child: ListTile(
+                                leading: Icon(textIcon.icon),
+                                title: Text(textIcon.text),
+                              ),
+                            ),
+                        ],
+                      ),
+                      SizedBox(width: trailingDropdownPadding),
+                    ])
+                  : trailing,
+              onTap: onTap,
+              onLongPress: onLongPress,
+            )));
   }
 }

@@ -9,13 +9,16 @@ import 'package:get/get.dart';
 /// This class manage system colors and full screen loader
 
 class PageContainer extends StatelessWidget {
-  PageContainer(
-      {super.key,
-      required this.body,
-      this.bottomNavigationBar,
-      this.backgroundColor,
-      this.hideLoadingOverlay,
-      this.floatingActionButton});
+  PageContainer({
+    super.key,
+    required this.body,
+    this.bottomNavigationBar,
+    this.backgroundColor,
+    this.hideLoadingOverlay,
+    this.floatingActionButton,
+    this.drawer,
+    this.appBar,
+  });
 
   final _mainController = Get.find<MainController>();
 
@@ -24,11 +27,15 @@ class PageContainer extends StatelessWidget {
   final Color? backgroundColor;
   final bool? hideLoadingOverlay;
   final Widget? floatingActionButton;
+  final Drawer? drawer;
+  final AppBar? appBar;
 
   @override
   Widget build(BuildContext context) =>
       Stack(fit: StackFit.expand, children: <Widget>[
         Scaffold(
+          appBar: appBar,
+          drawer: drawer,
           resizeToAvoidBottomInset: false,
           bottomNavigationBar: bottomNavigationBar,
           //This background color is displayed in the status bar and bottom bar of iOS devices

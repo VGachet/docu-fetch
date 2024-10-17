@@ -7,6 +7,17 @@ class PdfListBinding extends Bindings {
     Get.lazyPut<PdfListController>(() => PdfListController(
           getLocalPdfListUseCase: Get.find(),
           getLocalFolderListUseCase: Get.find(),
+          getLocalRepositoryListUseCase: Get.find(),
+          deleteLocalPdfUseCase: Get.find(),
+          insertLocalPdfUseCase: Get.find(),
+          insertLocalRepositoryUseCase: Get.find(),
+          getPdfListUseCase: Get.find(),
+          updateLocalPdfUseCase: Get.find(),
+          deleteLocalRepositoryUseCase: Get.find(),
+          insertLocalFolderUseCase: Get.find(),
+          updateLocalFolderUseCase: Get.find(),
+          deleteLocalFolderUseCase: Get.find(),
+          downloadPdfUseCase: Get.find(),
         ));
   }
 }
