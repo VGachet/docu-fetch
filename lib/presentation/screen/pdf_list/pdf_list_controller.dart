@@ -44,7 +44,7 @@ class PdfListController extends GetxController {
 
   final RxList<Pdf> pdfList = <Pdf>[].obs;
   final RxList<Folder> folderList = <Folder>[].obs;
-  final RxList<Pdf> selectedPdfList = <Pdf>[].obs;
+  final RxList<dynamic> selectedList = [].obs;
   final RxList<Folder?> parentFolderList = <Folder?>[].obs;
   RxList<Repository> repositoryList = RxList.empty();
 
@@ -74,6 +74,8 @@ class PdfListController extends GetxController {
   RxBool isPdfRenameButtonDisabled = true.obs;
 
   RxBool isFolderRenameButtonDisabled = true.obs;
+
+  RxBool isSelectionMode = false.obs;
 
   final MainController mainController = Get.find();
 
@@ -149,6 +151,46 @@ class PdfListController extends GetxController {
     mainController.isLoading.value = false;
   }
 
+  void toggleSelectionMode() {
+    isSelectionMode.value = !isSelectionMode.value;
+    selectedList.clear();
+  }
+
+  // Method to toggle selection mode and select/deselect items
+  void toggleSelection(dynamic item) {
+    if (item is Folder) {
+      if (selectedList.contains(item)) {
+        selectedList.remove(item);
+      } else {
+        selectedList.add(item);
+      }
+    } else if (item is Pdf) {
+      if (selectedList.contains(item)) {
+        selectedList.remove(item);
+      } else {
+        selectedList.add(item);
+      }
+    }
+  }
+
+  // Method to delete selected items
+  Future<void> deleteSelectedItems() async {
+    for (dynamic item in selectedList) {
+      if (item is Folder) {
+        await deleteFolder(item);
+      } else if (item is Pdf) {
+        await deleteLocalPdf(item);
+      }
+    }
+    toggleSelectionMode();
+  }
+
+  // Method to cut selected items
+  void cutSelectedItems() {
+    // Implement cut logic here
+    toggleSelectionMode();
+  }
+
   /* Folders */
 
   Future<void> createFolder({required String folderName}) async {
@@ -220,17 +262,6 @@ class PdfListController extends GetxController {
       AlertMessage.show(
           message:
               'error_deleting_folder'.trParams({'folderTitle': folder.title}));
-    }
-  }
-
-  void cutPdfToFolder(Pdf pdf) {
-    selectedPdfList.add(pdf);
-  }
-
-  void pastePdfToFolder(Folder folder) {
-    if (selectedPdfList.isNotEmpty) {
-      // Move the cutPdf to the specified folder
-      selectedPdfList.clear();
     }
   }
 

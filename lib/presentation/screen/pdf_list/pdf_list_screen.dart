@@ -30,6 +30,8 @@ class PdfListScreen extends StatelessWidget {
                   ? controller.parentFolderList.last!.title
                   : '',
               style: CustomTheme.title),
+          backgroundColor: Get.theme.colorScheme.secondary,
+          leadingWidth: 72,
           leading: Builder(
             builder: (context) => Padding(
               padding: const EdgeInsets.symmetric(
@@ -42,7 +44,7 @@ class PdfListScreen extends StatelessWidget {
             ),
           ),
         ),
-        backgroundColor: Get.theme.colorScheme.surface,
+        backgroundColor: Get.theme.colorScheme.secondary,
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -117,24 +119,63 @@ class PdfListScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (controller.parentFolderList.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: CustomMargins.margin32,
-                    bottom: CustomMargins.margin8,
-                    left: CustomMargins.margin16,
-                  ),
-                  child: NeumorphicButton(
-                    icon: Icons.arrow_back,
-                    text: 'back'.tr,
-                    onTap: () {
-                      controller.parentFolderList.removeLast();
-                      controller.loadFolderContent(
-                          controller.parentFolderList.isNotEmpty
-                              ? controller.parentFolderList.last
-                              : null);
-                    },
-                  ),
+              Row(
+                children: [
+                  if (controller.parentFolderList.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: CustomMargins.margin32,
+                        bottom: CustomMargins.margin8,
+                        left: CustomMargins.margin16,
+                        right: CustomMargins.margin16,
+                      ),
+                      child: NeumorphicButton(
+                        icon: Icons.arrow_back,
+                        text: 'back'.tr,
+                        onTap: () {
+                          controller.parentFolderList.removeLast();
+                          controller.loadFolderContent(
+                              controller.parentFolderList.isNotEmpty
+                                  ? controller.parentFolderList.last
+                                  : null);
+                        },
+                      ),
+                    ),
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: CustomMargins.margin32,
+                      bottom: CustomMargins.margin8,
+                      left: CustomMargins.margin16,
+                      right: CustomMargins.margin16,
+                    ),
+                    child: NeumorphicButton(
+                      text: controller.isSelectionMode.value
+                          ? 'cancel_select'.tr
+                          : 'select'.tr,
+                      onTap: controller.toggleSelectionMode,
+                    ),
+                  )
+                ],
+              ),
+              if (controller.isSelectionMode.value)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    NeumorphicButton(
+                      icon: Icons.cut,
+                      onTap: controller.cutSelectedItems,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: CustomMargins.margin16,
+                          vertical: CustomMargins.margin8),
+                      child: NeumorphicButton(
+                        icon: Icons.delete,
+                        onTap: showDeleteConfirmDialog,
+                      ),
+                    ),
+                  ],
                 ),
               Expanded(
                 child: RefreshIndicator(
@@ -155,15 +196,31 @@ class PdfListScreen extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: CustomMargins.margin8),
-                          child: NeumorphicListTile(
-                            title: folder.title,
-                            leading: const Icon(Icons.folder),
-                            onTap: () {
-                              controller.loadFolderContent(folder);
-                            },
-                            onDismissed: (_) {
-                              controller.deleteFolder(folder);
-                            },
+                          child: Obx(
+                            () => NeumorphicListTile(
+                              title: folder.title,
+                              leading: const Icon(Icons.folder),
+                              isSelectionMode: controller.isSelectionMode.value,
+                              isSelected:
+                                  controller.selectedList.contains(folder),
+                              onCheckboxChanged: (value) {
+                                controller.toggleSelection(folder);
+                              },
+                              onLongPress: () {
+                                controller.toggleSelectionMode();
+                                controller.selectedList.add(folder);
+                              },
+                              onTap: () {
+                                if (controller.isSelectionMode.value) {
+                                  controller.toggleSelection(folder);
+                                } else {
+                                  controller.loadFolderContent(folder);
+                                }
+                              },
+                              onDismissed: (_) {
+                                showDeleteConfirmDialog(folder: folder);
+                              },
+                            ),
                           ),
                         );
                       } else {
@@ -172,18 +229,34 @@ class PdfListScreen extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: CustomMargins.margin8),
-                          child: NeumorphicListTile(
-                            title: pdf.title,
-                            leading: const Icon(Icons.picture_as_pdf),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.cut),
-                              onPressed: () => controller.cutPdfToFolder(pdf),
+                          child: Obx(
+                            () => NeumorphicListTile(
+                              title: pdf.title,
+                              leading: const Icon(Icons.picture_as_pdf),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => showRenamePdfDialog(pdf),
+                              ),
+                              isSelectionMode: controller.isSelectionMode.value,
+                              isSelected: controller.selectedList.contains(pdf),
+                              onCheckboxChanged: (value) {
+                                controller.toggleSelection(pdf);
+                              },
+                              onLongPress: () {
+                                controller.toggleSelectionMode();
+                                controller.selectedList.add(pdf);
+                              },
+                              onTap: () {
+                                if (controller.isSelectionMode.value) {
+                                  controller.toggleSelection(pdf);
+                                } else {
+                                  Get.toNamed(Routes.pdf, arguments: pdf);
+                                }
+                              },
+                              onDismissed: (_) {
+                                showDeleteConfirmDialog(pdf: pdf);
+                              },
                             ),
-                            onTap: () =>
-                                Get.toNamed(Routes.pdf, arguments: pdf),
-                            onDismissed: (_) {
-                              controller.deleteLocalPdf(pdf);
-                            },
                           ),
                         );
                       }
@@ -194,27 +267,8 @@ class PdfListScreen extends StatelessWidget {
             ],
           ),
         ),
-        floatingActionButton: Obx(
-          () => controller.selectedPdfList.isNotEmpty
-              ? FloatingActionButton(
-                  onPressed: () {
-                    // Show dialog to select folder to paste the PDF
-                    showPastePdfDialog();
-                  },
-                  child: const Icon(Icons.paste),
-                )
-              : Container(),
-        ),
       ),
     );
-  }
-
-  void showCreateFolderDialog() {
-    // Implementation of dialog to create a new folder
-  }
-
-  void showPastePdfDialog() {
-    // Implementation of dialog to select folder to paste the PDF
   }
 
   void showUrlFormDialog() {
@@ -393,8 +447,7 @@ class PdfListScreen extends StatelessWidget {
               } else if (pdf != null) {
                 await controller.deleteLocalPdf(pdf);
               } else {
-                //TODO: Delete selection
-                //await controller.deleteSelectedPdfs();
+                await controller.deleteSelectedItems();
               }
               Get.back();
             },

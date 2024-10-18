@@ -56,6 +56,9 @@ final Map<String, String> enUS = {
   'docufetch_tutorial': 'DocuFetch Tutorial',
   'error_inserting_repository': 'Error inserting the repository',
   'back': 'Back',
+  'cancel_selection': 'Cancel selection',
+  'select': 'Select',
+  'select_all': 'Select all',
 };
 
 final Map<String, String> fr = {
@@ -114,4 +117,7 @@ final Map<String, String> fr = {
   'docufetch_tutorial': 'Tutoriel DocuFetch',
   'error_inserting_repository': 'Erreur lors de l\'insertion du dépôt',
   'back': 'Retour',
+  'cancel_select': 'Annuler séléction',
+  'select': 'Sélectionner',
+  'select_all': 'Tout sélectionner',
 };
