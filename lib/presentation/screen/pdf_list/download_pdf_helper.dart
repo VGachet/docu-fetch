@@ -32,7 +32,9 @@ class DownloadPdfHelper {
   Rxn<DownloadData> downloadData = Rxn();
 
   Future<void> downloadPdf(
-      {required String repositoryUrl, required String repositoryName}) async {
+      {required String repositoryUrl,
+      required String repositoryName,
+      required int? parentFolderId}) async {
     final localPath = '${(await getApplicationDocumentsDirectory()).path}/pdfs';
 
     downloadData.value = DownloadData();
@@ -50,8 +52,8 @@ class DownloadPdfHelper {
     final pdfListResource = await getPdfListUseCase(repositoryUrl);
 
     if (pdfListResource is Success) {
-      final createFolderResource = await insertLocalFolderUseCase(
-          Folder(title: repositoryName, order: 0));
+      final createFolderResource = await insertLocalFolderUseCase(Folder(
+          title: repositoryName, order: 0, parentFolder: parentFolderId));
 
       if (createFolderResource is Success) {
         final List<Pdf> downloadedPdfList = pdfListResource.data!;

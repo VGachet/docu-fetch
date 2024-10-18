@@ -45,7 +45,7 @@ class PdfListController extends GetxController {
   final RxList<Pdf> pdfList = <Pdf>[].obs;
   final RxList<Folder> folderList = <Folder>[].obs;
   final RxList<Pdf> selectedPdfList = <Pdf>[].obs;
-  final RxList<int?> parentFolderIdList = <int?>[].obs;
+  final RxList<Folder?> parentFolderList = <Folder?>[].obs;
   RxList<Repository> repositoryList = RxList.empty();
 
   final DownloadPdfUseCase downloadPdfUseCase;
@@ -78,8 +78,8 @@ class PdfListController extends GetxController {
   final MainController mainController = Get.find();
 
   @override
-  void onInit() async {
-    super.onInit();
+  void onReady() async {
+    super.onReady();
     await loadLocalRepositoryList();
     await loadFolderContent(null);
 
@@ -109,7 +109,7 @@ class PdfListController extends GetxController {
   }
 
   void validatorPdfRenameFields() {
-    if (renamePdfController.text.length > 3) {
+    if (renamePdfController.text.length > 1) {
       isPdfRenameButtonDisabled.value = false;
     } else {
       isPdfRenameButtonDisabled.value = true;
@@ -117,45 +117,30 @@ class PdfListController extends GetxController {
   }
 
   void validatorFolderRenameFields() {
-    if (renameFolderController.text.length > 3) {
+    if (renameFolderController.text.length > 1) {
       isFolderRenameButtonDisabled.value = false;
     } else {
       isFolderRenameButtonDisabled.value = true;
     }
   }
 
-  Future<void> loadLocalRepositoryList() async {
-    mainController.isLoading.value = true;
-
-    repositoryList.clear();
-    final localRepositoryListResource = await getLocalRepositoryListUseCase();
-
-    if (localRepositoryListResource is Success) {
-      repositoryList.addAll(localRepositoryListResource.data!);
-    } else {
-      AlertMessage.show(message: 'error_retrieving_repository'.tr);
-    }
-
-    mainController.isLoading.value = true;
-  }
-
-  Future<void> loadFolderContent(int? parentFolderId) async {
+  Future<void> loadFolderContent(Folder? parentFolder) async {
     mainController.isLoading.value = true;
 
     folderList.clear();
     pdfList.clear();
 
     // Load the content of the specified folder
-    final folderListResource = await getLocalFolderListUseCase(parentFolderId);
-    final pdfListResource = await getLocalPdfListUseCase(parentFolderId);
+    final folderListResource =
+        await getLocalFolderListUseCase(parentFolder?.id!);
+    final pdfListResource = await getLocalPdfListUseCase(parentFolder?.id);
 
     if (folderListResource is Success && pdfListResource is Success) {
       folderList.value = folderListResource.data!;
       pdfList.value = pdfListResource.data!;
 
-      if (parentFolderId != null &&
-          !parentFolderIdList.contains(parentFolderId)) {
-        parentFolderIdList.add(parentFolderId);
+      if (parentFolder != null && !parentFolderList.contains(parentFolder)) {
+        parentFolderList.add(parentFolder);
       }
     } else {
       AlertMessage.show(message: 'error_retrieving_pdf_list'.tr);
@@ -169,14 +154,72 @@ class PdfListController extends GetxController {
   Future<void> createFolder({required String folderName}) async {
     renameFolderController.clear();
 
-    final insertFolderResource =
-        await insertLocalFolderUseCase(Folder(title: folderName, order: 0));
+    final insertFolderResource = await insertLocalFolderUseCase(Folder(
+        title: folderName,
+        order: 0,
+        parentFolder:
+            parentFolderList.isNotEmpty ? parentFolderList.last!.id : null));
 
     if (insertFolderResource is Success) {
       await loadFolderContent(
-          parentFolderIdList.isNotEmpty ? parentFolderIdList.last : null);
+          parentFolderList.isNotEmpty ? parentFolderList.last : null);
     } else {
       AlertMessage.show(message: 'error_creating_folder'.tr);
+    }
+  }
+
+  Future<void> renameFolder(Folder folder) async {
+    final updateFolderResource = await updateLocalFolderUseCase(
+        folder.copyWith(title: renameFolderController.text));
+
+    if (updateFolderResource is Success) {
+      await loadFolderContent(
+          parentFolderList.isNotEmpty ? parentFolderList.last : null);
+    } else {
+      AlertMessage.show(
+          message:
+              'error_renaming_folder'.trParams({'folderTitle': folder.title}));
+    }
+
+    renameFolderController.clear();
+  }
+
+  Future<void> deleteFolder(Folder folder) async {
+    final List<Pdf> pdfsToDelete =
+        pdfList.where((pdf) => pdf.folderId == folder.id).toList();
+
+    for (Pdf pdf in pdfsToDelete) {
+      final deletePdfResource = await deleteLocalPdfUseCase(pdf);
+
+      if (deletePdfResource is Success) {
+        pdfList.remove(pdf);
+        final localPath =
+            '${(await getApplicationDocumentsDirectory()).path}/pdfs';
+        try {
+          File('$localPath/${pdf.title}-${pdf.version}.pdf').deleteSync();
+        } catch (_) {
+          AlertMessage.show(
+              message:
+                  'error_deleting_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+          return;
+        }
+      } else {
+        AlertMessage.show(
+            message:
+                'error_deleting_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+        return;
+      }
+    }
+
+    final deleteFolderResource = await deleteLocalFolderUseCase(folder);
+
+    if (deleteFolderResource is Success) {
+      await loadFolderContent(
+          parentFolderList.isNotEmpty ? parentFolderList.last : null);
+    } else {
+      AlertMessage.show(
+          message:
+              'error_deleting_folder'.trParams({'folderTitle': folder.title}));
     }
   }
 
@@ -200,7 +243,7 @@ class PdfListController extends GetxController {
 
     if (insertLocalPdfResource is Success) {
       await loadFolderContent(
-          parentFolderIdList.isNotEmpty ? parentFolderIdList.last : null);
+          parentFolderList.isNotEmpty ? parentFolderList.last : null);
     } else {
       AlertMessage.show(
           message: 'error_saving_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
@@ -229,7 +272,8 @@ class PdfListController extends GetxController {
     }
   }
 
-  Future<void> downloadPdf() async {
+  Future<void> downloadPdf(
+      {required String repositoryUrl, required String repositoryName}) async {
     await DownloadPdfHelper(
       downloadPdfUseCase: downloadPdfUseCase,
       getPdfListUseCase: getPdfListUseCase,
@@ -237,9 +281,14 @@ class PdfListController extends GetxController {
       insertLocalPdfUseCase: insertLocalPdfUseCase,
       pdfList: pdfList,
     ).downloadPdf(
-      repositoryUrl: repoJsonUrlController.text,
-      repositoryName: repoNameController.text,
+      repositoryUrl: repositoryUrl,
+      repositoryName: repositoryName,
+      parentFolderId:
+          parentFolderList.isNotEmpty ? parentFolderList.last!.id : null,
     );
+
+    await loadFolderContent(
+        parentFolderList.isNotEmpty ? parentFolderList.last : null);
 
     repoJsonUrlController.clear();
     repoNameController.clear();
@@ -271,13 +320,31 @@ class PdfListController extends GetxController {
         final localCreatedFile = await File(localFilePath).create();
         await localCreatedFile.writeAsBytes(await file.xFile.readAsBytes());
 
-        await insertLocalPdf(Pdf(title: pdfTitle, path: localFilePath));
-      } catch (e) {
-        print(e);
+        await insertLocalPdf(Pdf(
+            title: pdfTitle,
+            path: localFilePath,
+            folderId: parentFolderList.isNotEmpty
+                ? parentFolderList.last!.id
+                : null));
+      } catch (_) {
         AlertMessage.show(
             message: 'error_saving_pdf'.trParams({'pdfTitle': pdfTitle}));
       }
     }
+  }
+
+  Future<void> renamePdf(Pdf pdf) async {
+    final updateLocalPDfResource = await updateLocalPdfUseCase(pdf);
+
+    if (updateLocalPDfResource is Success) {
+      await loadFolderContent(
+          parentFolderList.isNotEmpty ? parentFolderList.last : null);
+    } else {
+      AlertMessage.show(
+          message: 'error_renaming_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+    }
+
+    renamePdfController.clear();
   }
 
   /* Repository */
@@ -304,4 +371,30 @@ class PdfListController extends GetxController {
   Future<bool> insertRepository() async => await insertLocalRepository(
       repositoryName: repoNameController.text,
       repositoryUrl: repoJsonUrlController.text);
+
+  Future<void> loadLocalRepositoryList() async {
+    mainController.isLoading.value = true;
+
+    repositoryList.clear();
+    final localRepositoryListResource = await getLocalRepositoryListUseCase();
+
+    if (localRepositoryListResource is Success) {
+      repositoryList.addAll(localRepositoryListResource.data!);
+    } else {
+      AlertMessage.show(message: 'error_retrieving_repository'.tr);
+    }
+
+    mainController.isLoading.value = true;
+  }
+
+  Future<void> deleteLocalRepository(Repository repository) async {
+    final deleteLocalRepositoryResource =
+        await deleteLocalRepositoryUseCase(repository);
+
+    if (deleteLocalRepositoryResource is Success) {
+      repositoryList.remove(repository);
+    } else {
+      AlertMessage.show(message: 'delete_repo_error'.tr);
+    }
+  }
 }

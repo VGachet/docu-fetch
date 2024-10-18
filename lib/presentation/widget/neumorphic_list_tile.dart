@@ -34,16 +34,15 @@ class NeumorphicListTile extends StatelessWidget {
     return Dismissible(
         key: UniqueKey(),
         onDismissed: onDismissed,
-        background: Container(
-          color: Colors.red,
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: const Icon(Icons.delete, color: Colors.white),
-        ),
+        direction: DismissDirection.endToStart,
+        background: const SizedBox(),
         secondaryBackground: Container(
-          color: Colors.red,
           alignment: Alignment.centerRight,
           padding: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: const Icon(Icons.delete, color: Colors.white),
         ),
         child: Container(

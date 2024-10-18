@@ -1,3 +1,6 @@
+import 'package:docu_fetch/domain/model/folder.dart';
+import 'package:docu_fetch/domain/model/pdf.dart';
+import 'package:docu_fetch/domain/model/text_icon.dart';
 import 'package:docu_fetch/presentation/routes.dart';
 import 'package:docu_fetch/presentation/screen/pdf_list/pdf_list_controller.dart';
 import 'package:docu_fetch/presentation/ui/lower_case_input_formatter.dart';
@@ -7,8 +10,10 @@ import 'package:docu_fetch/presentation/ui/theme/custom_theme.dart';
 import 'package:docu_fetch/presentation/widget/neumorphic_button.dart';
 import 'package:docu_fetch/presentation/widget/neumorphic_list_tile.dart';
 import 'package:docu_fetch/presentation/widget/page_container.dart';
+import 'package:docu_fetch/util/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class PdfListScreen extends StatelessWidget {
   final PdfListController controller = Get.find();
@@ -17,156 +22,189 @@ class PdfListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageContainer(
-      appBar: AppBar(
-        leading: Builder(
-          builder: (context) => Padding(
-            padding: const EdgeInsets.symmetric(
-                vertical: CustomMargins.margin8,
-                horizontal: CustomMargins.margin16),
-            child: NeumorphicButton(
-              icon: Icons.menu,
-              onTap: () => Scaffold.of(context).openDrawer(),
+    return Obx(
+      () => PageContainer(
+        appBar: AppBar(
+          title: Text(
+              controller.parentFolderList.isNotEmpty
+                  ? controller.parentFolderList.last!.title
+                  : '',
+              style: CustomTheme.title),
+          leading: Builder(
+            builder: (context) => Padding(
+              padding: const EdgeInsets.symmetric(
+                  vertical: CustomMargins.margin8,
+                  horizontal: CustomMargins.margin16),
+              child: NeumorphicButton(
+                icon: Icons.menu,
+                onTap: () => Scaffold.of(context).openDrawer(),
+              ),
             ),
           ),
         ),
-      ),
-      backgroundColor: Get.theme.colorScheme.surface,
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
+        backgroundColor: Get.theme.colorScheme.surface,
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Get.theme.colorScheme.onSurface,
+                ),
+                child: Text(
+                  'Docu Fetch',
+                  style: CustomTheme.title
+                      .copyWith(color: Get.theme.colorScheme.secondary),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.picture_as_pdf),
+                title: Text('add_pdf_from_phone'.tr, style: CustomTheme.body),
+                onTap: () {
+                  Navigator.pop(context);
+                  controller.pickPdfFromDevice();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.picture_as_pdf_outlined),
+                title: Text('add_pdf_from_url'.tr, style: CustomTheme.body),
+                onTap: () {
+                  Navigator.pop(context);
+                  showUrlFormDialog();
+                },
+              ),
+              Container(
+                height: 1,
                 color: Get.theme.colorScheme.onSurface,
               ),
-              child: Text(
-                'Docu Fetch',
-                style: CustomTheme.title
-                    .copyWith(color: Get.theme.colorScheme.secondary),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.picture_as_pdf),
-              title: Text('add_pdf_from_file'.tr, style: CustomTheme.body),
-              onTap: () {
-                Navigator.pop(context);
-                controller.pickPdfFromDevice();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.create_new_folder),
-              title: Text('add_pdf_from_url'.tr, style: CustomTheme.body),
-              onTap: () {
-                Navigator.pop(context);
-                showUrlFormDialog();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.list),
-              title: Text('display_unsorted_pdf'.tr, style: CustomTheme.body),
-              onTap: () {
-                Navigator.pop(context);
-                // Implement the action to display unsorted PDFs
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.sort),
-              title: Text('display_sorted_pdf'.tr, style: CustomTheme.body),
-              onTap: () {
-                Navigator.pop(context);
-                // Implement the action to display sorted PDFs
-              },
-            ),
-          ],
-        ),
-      ),
-      body: Obx(
-        () => Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (controller.parentFolderIdList.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: CustomMargins.margin32,
-                  bottom: CustomMargins.margin8,
-                  left: CustomMargins.margin16,
-                ),
-                child: NeumorphicButton(
-                  icon: Icons.arrow_back,
-                  text: 'back'.tr,
-                  onTap: () {
-                    controller.parentFolderIdList.removeLast();
-                    controller.loadFolderContent(
-                        controller.parentFolderIdList.isNotEmpty
-                            ? controller.parentFolderIdList.last
-                            : null);
-                  },
-                ),
-              ),
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () => controller.loadFolderContent(
-                    controller.parentFolderIdList.isNotEmpty
-                        ? controller.parentFolderIdList.last
-                        : null),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: CustomMargins.margin16,
-                      vertical: CustomMargins.margin8),
-                  itemCount:
-                      controller.pdfList.length + controller.folderList.length,
-                  itemBuilder: (context, index) {
-                    if (index < controller.folderList.length) {
-                      final folder = controller.folderList[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: CustomMargins.margin8),
-                        child: NeumorphicListTile(
-                          title: folder.title,
-                          leading: const Icon(Icons.folder),
-                          onTap: () => controller.loadFolderContent(folder.id),
-                        ),
-                      );
-                    } else {
-                      final pdf = controller
-                          .pdfList[index - controller.folderList.length];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: CustomMargins.margin8),
-                        child: NeumorphicListTile(
-                          title: pdf.title,
-                          leading: const Icon(Icons.picture_as_pdf),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.cut),
-                            onPressed: () => controller.cutPdfToFolder(pdf),
-                          ),
-                          onTap: () => Get.toNamed(Routes.pdf, arguments: pdf),
-                          onDismissed: (direction) {
-                            controller.deleteLocalPdf(pdf);
-                          },
-                        ),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: Obx(
-        () => controller.selectedPdfList.isNotEmpty
-            ? FloatingActionButton(
-                onPressed: () {
-                  // Show dialog to select folder to paste the PDF
-                  showPastePdfDialog();
+              ListTile(
+                leading: const Icon(Icons.create_new_folder),
+                title: Text('create_folder'.tr, style: CustomTheme.body),
+                onTap: () {
+                  Navigator.pop(context);
+                  showRenameFolderDialog();
                 },
-                child: Icon(Icons.paste),
-              )
-            : Container(),
+              ),
+              Container(
+                height: 1,
+                color: Get.theme.colorScheme.onSurface,
+              ),
+              ListTile(
+                leading: const Icon(Icons.list_alt),
+                title: Text('repository_list'.tr, style: CustomTheme.body),
+                onTap: () {
+                  Navigator.pop(context);
+                  showRepositoryListDialog();
+                },
+              ),
+              Container(
+                height: 1,
+                color: Get.theme.colorScheme.onSurface,
+              ),
+              ListTile(
+                leading: const Icon(Icons.help),
+                title: Text('docufetch_tutorial'.tr, style: CustomTheme.body),
+                onTap: () {
+                  Navigator.pop(context);
+                  launchUrlString(Constants.readMeUrl);
+                },
+              ),
+            ],
+          ),
+        ),
+        body: Obx(
+          () => Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (controller.parentFolderList.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: CustomMargins.margin32,
+                    bottom: CustomMargins.margin8,
+                    left: CustomMargins.margin16,
+                  ),
+                  child: NeumorphicButton(
+                    icon: Icons.arrow_back,
+                    text: 'back'.tr,
+                    onTap: () {
+                      controller.parentFolderList.removeLast();
+                      controller.loadFolderContent(
+                          controller.parentFolderList.isNotEmpty
+                              ? controller.parentFolderList.last
+                              : null);
+                    },
+                  ),
+                ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () => controller.loadFolderContent(
+                      controller.parentFolderList.isNotEmpty
+                          ? controller.parentFolderList.last
+                          : null),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: CustomMargins.margin16,
+                        vertical: CustomMargins.margin8),
+                    itemCount: controller.pdfList.length +
+                        controller.folderList.length,
+                    itemBuilder: (context, index) {
+                      if (index < controller.folderList.length) {
+                        final folder = controller.folderList[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: CustomMargins.margin8),
+                          child: NeumorphicListTile(
+                            title: folder.title,
+                            leading: const Icon(Icons.folder),
+                            onTap: () {
+                              controller.loadFolderContent(folder);
+                            },
+                            onDismissed: (_) {
+                              controller.deleteFolder(folder);
+                            },
+                          ),
+                        );
+                      } else {
+                        final pdf = controller
+                            .pdfList[index - controller.folderList.length];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: CustomMargins.margin8),
+                          child: NeumorphicListTile(
+                            title: pdf.title,
+                            leading: const Icon(Icons.picture_as_pdf),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.cut),
+                              onPressed: () => controller.cutPdfToFolder(pdf),
+                            ),
+                            onTap: () =>
+                                Get.toNamed(Routes.pdf, arguments: pdf),
+                            onDismissed: (_) {
+                              controller.deleteLocalPdf(pdf);
+                            },
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: Obx(
+          () => controller.selectedPdfList.isNotEmpty
+              ? FloatingActionButton(
+                  onPressed: () {
+                    // Show dialog to select folder to paste the PDF
+                    showPastePdfDialog();
+                  },
+                  child: const Icon(Icons.paste),
+                )
+              : Container(),
+        ),
       ),
     );
   }
@@ -247,7 +285,9 @@ class PdfListScreen extends StatelessWidget {
                   Get.back();
                   final bool isRepoAdded = await controller.insertRepository();
                   if (isRepoAdded) {
-                    await controller.downloadPdf();
+                    await controller.downloadPdf(
+                        repositoryUrl: controller.repoJsonUrlController.text,
+                        repositoryName: controller.repoNameController.text);
                   } else {
                     controller.repoNameController.clear();
                     controller.repoJsonUrlController.clear();
@@ -255,6 +295,217 @@ class PdfListScreen extends StatelessWidget {
                 },
                 text: 'validate'.tr,
               )),
+        ],
+      ),
+    );
+  }
+
+  void showRenameFolderDialog({Folder? folder}) {
+    showDialog(
+      context: Get.overlayContext!,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.all(CustomMargins.margin16),
+        elevation: 4,
+        backgroundColor: CustomColors.colorGreyLight,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              style: CustomTheme.body,
+              controller: controller.renameFolderController,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                labelText: folder != null
+                    ? 'enter_new_folder_name'.tr
+                    : 'enter_folder_name'.tr,
+                border: const OutlineInputBorder(),
+                labelStyle: CustomTheme.body,
+                enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          NeumorphicButton(
+            onTap: () {
+              controller.renameFolderController.clear();
+              Get.back();
+            },
+            text: 'cancel'.tr,
+          ),
+          Obx(
+            () => NeumorphicButton(
+              onTap: () async {
+                Get.back();
+                if (folder != null) {
+                  await controller.renameFolder(folder);
+                } else {
+                  await controller.createFolder(
+                      folderName: controller.renameFolderController.text);
+                }
+              },
+              isDisabled: controller.isFolderRenameButtonDisabled.value,
+              text: folder != null ? 'rename'.tr : 'validate'.tr,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showDeleteConfirmDialog({Pdf? pdf, Folder? folder}) {
+    showDialog(
+      context: Get.overlayContext!,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.all(CustomMargins.margin16),
+        elevation: 4,
+        backgroundColor: CustomColors.colorGreyLight,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+                pdf != null
+                    ? 'delete_pdf_confirmation'
+                        .trParams({'pdfTitle': pdf.getTitle()})
+                    : folder != null
+                        ? 'delete_folder_confirmation'
+                            .trParams({'folderTitle': folder.title})
+                        : 'delete_selected_pdfs_confirmation'.tr,
+                style: CustomTheme.body),
+          ],
+        ),
+        actions: [
+          NeumorphicButton(
+            onTap: Get.back,
+            text: 'cancel'.tr,
+          ),
+          NeumorphicButton(
+            onTap: () async {
+              if (folder != null) {
+                await controller.deleteFolder(folder);
+              } else if (pdf != null) {
+                await controller.deleteLocalPdf(pdf);
+              } else {
+                //TODO: Delete selection
+                //await controller.deleteSelectedPdfs();
+              }
+              Get.back();
+            },
+            text: 'delete'.tr,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showRepositoryListDialog() {
+    showDialog(
+      context: Get.overlayContext!,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.all(CustomMargins.margin8),
+        elevation: 4,
+        backgroundColor: CustomColors.colorGreyLight,
+        content: SizedBox(
+          height: 300,
+          width: Get.width,
+          child: Obx(
+            () => ListView.builder(
+              shrinkWrap: true,
+              itemCount: controller.repositoryList.length,
+              itemBuilder: (context, index) {
+                final repo = controller.repositoryList[index];
+                return NeumorphicListTile(
+                  title: repo.name,
+                  subtitle: repo.url,
+                  onTap: () {
+                    Get.back();
+                    controller.downloadPdf(
+                        repositoryUrl: repo.url, repositoryName: repo.name);
+                  },
+                  trailingDropdown: {
+                    TextIcon(text: 'update'.tr, icon: Icons.update): () =>
+                        controller.downloadPdf(
+                            repositoryUrl: repo.url, repositoryName: repo.name),
+                    TextIcon(text: 'delete'.tr, icon: Icons.delete_outline):
+                        () => controller.deleteLocalRepository(repo),
+                  },
+                  trailing: NeumorphicButton(
+                    icon: Icons.delete,
+                    onTap: () async {
+                      await controller.deleteLocalRepository(repo);
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        actions: [
+          NeumorphicButton(
+            onTap: Get.back,
+            text: 'close'.tr,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showRenamePdfDialog(Pdf pdf) {
+    showDialog(
+      context: Get.overlayContext!,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.all(CustomMargins.margin16),
+        elevation: 4,
+        backgroundColor: CustomColors.colorGreyLight,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              style: CustomTheme.body,
+              controller: controller.renamePdfController,
+              textCapitalization: TextCapitalization.words,
+              decoration: InputDecoration(
+                labelText: 'enter_new_pdf_name'.tr,
+                border: const OutlineInputBorder(),
+                labelStyle: CustomTheme.body,
+                enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          NeumorphicButton(
+            onTap: () {
+              controller.renamePdfController.clear();
+              Get.back();
+            },
+            text: 'cancel'.tr,
+          ),
+          Obx(
+            () => NeumorphicButton(
+              onTap: () async {
+                Get.back();
+                await controller.renamePdf(pdf.copyWith(
+                    renamedTitle: controller.renamePdfController.text));
+              },
+              isDisabled: controller.isPdfRenameButtonDisabled.value,
+              text: 'rename'.tr,
+            ),
+          ),
         ],
       ),
     );
