@@ -65,6 +65,9 @@ final Map<String, String> enUS = {
   'error_moving_folder': 'Error moving the folder: @folderTitle',
   'paste': 'Paste',
   'no_folder_pdf': 'No file or folder added',
+  'toggle_orientation': 'Toggle orientation',
+  'settings': 'Settings',
+  'error_update_pdf_orientation': 'Error updating the PDF orientation',
 };
 
 final Map<String, String> fr = {
@@ -132,4 +135,8 @@ final Map<String, String> fr = {
   'error_moving_folder': 'Erreur lors du déplacement du dossier: @folderTitle',
   'paste': 'Coller',
   'no_folder_pdf': 'Aucun fichier ni dossier ajouté',
+  'toggle_orientation': "Changer d'orientation",
+  'settings': 'Paramètres',
+  'error_update_pdf_orientation':
+      "Erreur lors de la mise à jour de l'orientation du PDF",
 };

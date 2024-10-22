@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:docu_fetch/domain/model/folder.dart';
 import 'package:docu_fetch/domain/model/pdf.dart';
@@ -298,10 +299,8 @@ class PdfListController extends GetxController {
 
       if (deletePdfResource is Success) {
         pdfList.remove(pdf);
-        final localPath =
-            '${(await getApplicationDocumentsDirectory()).path}/pdfs';
         try {
-          File('$localPath/${pdf.title}-${pdf.version}.pdf').deleteSync();
+          File(pdf.path!).deleteSync();
         } catch (_) {
           AlertMessage.show(
               message:
@@ -351,10 +350,8 @@ class PdfListController extends GetxController {
 
     if (deleteLocalPdfResource is Success) {
       pdfList.remove(pdf);
-      final localPath =
-          '${(await getApplicationDocumentsDirectory()).path}/pdfs';
       try {
-        File('$localPath/${pdf.title}-${pdf.version}.pdf').deleteSync();
+        File(pdf.path!).deleteSync();
       } catch (_) {
         AlertMessage.show(
             message:
@@ -407,7 +404,8 @@ class PdfListController extends GetxController {
         Directory(localPdfDirectoryPath).createSync();
       }
 
-      final String localFilePath = '$localPdfDirectoryPath/$pdfTitle.pdf';
+      final String localFilePath =
+          '$localPdfDirectoryPath/$pdfTitle-${Random().nextInt(100000)}.pdf';
 
       try {
         //PDF file is copied to the app's document directory

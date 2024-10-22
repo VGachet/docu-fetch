@@ -13,6 +13,7 @@ class Pdf {
   int lastPageOpened;
   int? folderId;
   int order;
+  bool isHorizontal;
 
   Pdf(
       {this.id,
@@ -24,7 +25,8 @@ class Pdf {
       this.description,
       this.lastPageOpened = 0,
       this.folderId,
-      this.order = 0});
+      this.order = 0,
+      this.isHorizontal = true});
 
   String getTitle() {
     return renamedTitle ?? title;
@@ -41,6 +43,7 @@ class Pdf {
     int? lastPageOpened,
     int? folderId,
     int? order,
+    bool? isHorizontal,
   }) =>
       Pdf(
         id: id ?? this.id,
@@ -53,5 +56,6 @@ class Pdf {
         lastPageOpened: lastPageOpened ?? this.lastPageOpened,
         folderId: folderId ?? this.folderId,
         order: order ?? this.order,
+        isHorizontal: isHorizontal ?? this.isHorizontal,
       );
 }

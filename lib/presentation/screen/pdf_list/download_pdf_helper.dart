@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:docu_fetch/data/networking/networking.dart';
 import 'package:docu_fetch/domain/model/download_data.dart';
 import 'package:docu_fetch/domain/model/folder.dart';
@@ -77,8 +79,8 @@ class DownloadPdfHelper {
             continue;
           }
 
-          final downloadPdfResource = await downloadPdfUseCase(
-              pdf.copyWith(path: '$localPath/${pdf.title}-${pdf.version}.pdf'));
+          final downloadPdfResource = await downloadPdfUseCase(pdf.copyWith(
+              path: '$localPath/${pdf.title}-${Random().nextInt(100000)}.pdf'));
 
           if (downloadPdfResource is Success) {
             await insertLocalPdfUseCase(downloadPdfResource.data!.copyWith(

@@ -332,7 +332,7 @@ class PdfListScreen extends StatelessWidget {
                                     vertical: CustomMargins.margin8),
                                 child: Obx(
                                   () => NeumorphicListTile(
-                                    title: pdf.title,
+                                    title: pdf.renamedTitle ?? pdf.title,
                                     leading: const Icon(Icons.picture_as_pdf),
                                     isSelectionMode:
                                         controller.isSelectionMode.value,
@@ -350,7 +350,15 @@ class PdfListScreen extends StatelessWidget {
                                       if (controller.isSelectionMode.value) {
                                         controller.toggleSelection(pdf);
                                       } else {
-                                        Get.toNamed(Routes.pdf, arguments: pdf);
+                                        Get.toNamed(Routes.pdf, arguments: pdf)
+                                            ?.then((_) {
+                                          controller.loadFolderContent(
+                                              controller.parentFolderList
+                                                      .isNotEmpty
+                                                  ? controller
+                                                      .parentFolderList.last
+                                                  : null);
+                                        });
                                       }
                                     },
                                     /*dismissible: !controller.isSelectionMode.value,

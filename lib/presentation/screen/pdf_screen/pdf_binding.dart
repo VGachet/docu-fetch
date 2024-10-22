@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 class PdfBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<PdfController>(
-        () => PdfController(updateLastPageOpenedUseCase: Get.find()));
+    Get.lazyPut<PdfController>(() => PdfController(
+        updateLastPageOpenedUseCase: Get.find(),
+        updateLocalPdfUseCase: Get.find()));
   }
 }
