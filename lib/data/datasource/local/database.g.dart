@@ -270,6 +270,13 @@ class _$PdfDao extends PdfDao {
   }
 
   @override
+  Future<void> setNullFolderId(int id) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE Pdf SET folderId = NULL WHERE id = ?1',
+        arguments: [id]);
+  }
+
+  @override
   Future<int> insertPdf(Pdf pdf) {
     return _pdfInsertionAdapter.insertAndReturnId(
         pdf, OnConflictStrategy.abort);
@@ -439,6 +446,13 @@ class _$FolderDao extends FolderDao {
             order: row['order'] as int,
             id: row['id'] as int?,
             parentFolder: row['parentFolder'] as int?));
+  }
+
+  @override
+  Future<void> setNullParentFolder(int id) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE Folder SET parentFolder = NULL WHERE id = ?1',
+        arguments: [id]);
   }
 
   @override

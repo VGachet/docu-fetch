@@ -18,6 +18,8 @@ class PdfListBinding extends Bindings {
           updateLocalFolderUseCase: Get.find(),
           deleteLocalFolderUseCase: Get.find(),
           downloadPdfUseCase: Get.find(),
+          setNullPdfFolderIdUseCase: Get.find(),
+          setNullParentFolderUseCase: Get.find(),
         ));
   }
 }

@@ -134,6 +134,26 @@ class MainRepositoryImpl implements MainRepository {
   }
 
   @override
+  Future<Resource<void>> setNullPdfFolderId(int id) async {
+    try {
+      await database.pdfDao.setNullFolderId(id);
+      return const Success(null);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<void>> setNullParentFolderId(int id) async {
+    try {
+      await database.folderDao.setNullParentFolder(id);
+      return const Success(null);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
   Future<Resource<int>> insertLocalFolder(Folder folder) async {
     final getFolderListResource = await getLocalFolderList(folder.parentFolder);
 

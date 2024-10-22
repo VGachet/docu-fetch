@@ -20,4 +20,6 @@ abstract class MainRepository {
   Future<Resource<void>> updateLocalFolderList(List<Folder> folderList);
   Future<Resource<void>> updateLocalFolder(Folder folder);
   Future<Resource<void>> deleteLocalFolder(Folder folder);
+  Future<Resource<void>> setNullPdfFolderId(int id);
+  Future<Resource<void>> setNullParentFolderId(int id);
 }

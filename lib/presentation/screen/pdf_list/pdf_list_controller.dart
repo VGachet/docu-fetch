@@ -14,6 +14,8 @@ import 'package:docu_fetch/domain/usecase/get_pdf_list_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_folder_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_pdf_use_case.dart';
 import 'package:docu_fetch/domain/usecase/insert_local_repository_use_case.dart';
+import 'package:docu_fetch/domain/usecase/set_null_parent_folder_use_case.dart';
+import 'package:docu_fetch/domain/usecase/set_null_pdf_folder_id_use_case.dart';
 import 'package:docu_fetch/domain/usecase/update_local_folder_use_case.dart';
 import 'package:docu_fetch/domain/usecase/update_pdf_use_case.dart';
 import 'package:docu_fetch/presentation/main_controller.dart';
@@ -40,6 +42,8 @@ class PdfListController extends GetxController {
     required this.insertLocalFolderUseCase,
     required this.updateLocalFolderUseCase,
     required this.deleteLocalFolderUseCase,
+    required this.setNullPdfFolderIdUseCase,
+    required this.setNullParentFolderUseCase,
   });
 
   final RxList<Pdf> pdfList = <Pdf>[].obs;
@@ -61,6 +65,8 @@ class PdfListController extends GetxController {
   final InsertLocalFolderUseCase insertLocalFolderUseCase;
   final UpdateLocalLocalFolderUseCase updateLocalFolderUseCase;
   final DeleteLocalFolderUseCase deleteLocalFolderUseCase;
+  final SetNullParentFolderUseCase setNullParentFolderUseCase;
+  final SetNullPdfFolderIdUseCase setNullPdfFolderIdUseCase;
 
   final TextEditingController repoJsonUrlController = TextEditingController();
   final TextEditingController repoNameController = TextEditingController();
@@ -76,6 +82,8 @@ class PdfListController extends GetxController {
   RxBool isFolderRenameButtonDisabled = true.obs;
 
   RxBool isSelectionMode = false.obs;
+
+  RxBool isCutMode = false.obs;
 
   final MainController mainController = Get.find();
 
@@ -156,6 +164,10 @@ class PdfListController extends GetxController {
     selectedList.clear();
   }
 
+  void toggleCutMode() {
+    isCutMode.value = !isCutMode.value;
+  }
+
   // Method to toggle selection mode and select/deselect items
   void toggleSelection(dynamic item) {
     if (item is Folder) {
@@ -173,6 +185,14 @@ class PdfListController extends GetxController {
     }
   }
 
+  void addAllToSelectedList() {
+    selectedList.addAll([...folderList, ...pdfList]);
+  }
+
+  void deselectAll() {
+    selectedList.clear();
+  }
+
   // Method to delete selected items
   Future<void> deleteSelectedItems() async {
     for (dynamic item in selectedList) {
@@ -185,10 +205,53 @@ class PdfListController extends GetxController {
     toggleSelectionMode();
   }
 
-  // Method to cut selected items
-  void cutSelectedItems() {
-    // Implement cut logic here
+  void moveSelectionToFolder() async {
+    for (dynamic item in selectedList) {
+      if (item is Pdf) {
+        final Pdf pdf = item;
+
+        Resource<void> result;
+
+        if (parentFolderList.isEmpty) {
+          result = await setNullPdfFolderIdUseCase(pdf.id!);
+        } else {
+          result = await updateLocalPdfUseCase(
+              pdf.copyWith(folderId: parentFolderList.last!.id));
+        }
+
+        if (result is Success) {
+          await loadFolderContent(
+              parentFolderList.isNotEmpty ? parentFolderList.last : null);
+        } else {
+          AlertMessage.show(
+              message:
+                  'error_moving_pdf'.trParams({'pdfTitle': pdf.getTitle()}));
+        }
+      } else if (item is Folder) {
+        final Folder folder = item;
+
+        Resource<void> result;
+
+        if (parentFolderList.isEmpty) {
+          result = await setNullParentFolderUseCase(folder.id!);
+        } else {
+          result = await updateLocalFolderUseCase(
+              folder.copyWith(parentFolder: parentFolderList.last!.id));
+        }
+
+        if (result is Success) {
+          await loadFolderContent(
+              parentFolderList.isNotEmpty ? parentFolderList.last : null);
+        } else {
+          AlertMessage.show(
+              message: 'error_moving_folder'
+                  .trParams({'folderTitle': folder.title}));
+        }
+      }
+    }
+
     toggleSelectionMode();
+    toggleCutMode();
   }
 
   /* Folders */

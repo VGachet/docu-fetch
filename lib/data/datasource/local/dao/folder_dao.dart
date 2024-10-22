@@ -26,4 +26,7 @@ abstract class FolderDao {
 
   @Update(onConflict: OnConflictStrategy.replace)
   Future<void> updateFolderList(List<Folder> folderList);
+
+  @Query('UPDATE Folder SET parentFolder = NULL WHERE id = :id')
+  Future<void> setNullParentFolder(int id);
 }

@@ -84,7 +84,11 @@ class NeumorphicButton extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                      Icon(icon, size: 20, color: iconColor),
+                      Icon(icon,
+                          size: 20,
+                          color: isDisabled
+                              ? CustomColors.colorInactive
+                              : iconColor),
                       if (text != null)
                         const SizedBox(width: CustomMargins.margin8),
                       if (text != null)

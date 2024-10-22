@@ -59,6 +59,12 @@ final Map<String, String> enUS = {
   'cancel_selection': 'Cancel selection',
   'select': 'Select',
   'select_all': 'Select all',
+  'deselect_all': 'Deselect all',
+  'cut': 'Cut',
+  'error_moving_pdf': 'Error moving the PDF: @pdfTitle',
+  'error_moving_folder': 'Error moving the folder: @folderTitle',
+  'paste': 'Paste',
+  'no_folder_pdf': 'No file or folder added',
 };
 
 final Map<String, String> fr = {
@@ -120,4 +126,10 @@ final Map<String, String> fr = {
   'cancel_select': 'Annuler séléction',
   'select': 'Sélectionner',
   'select_all': 'Tout sélectionner',
+  'deselect_all': 'Tout desélectionner',
+  'cut': 'Couper',
+  'error_moving_pdf': 'Erreur lors du déplacement du PDF: @pdfTitle',
+  'error_moving_folder': 'Erreur lors du déplacement du dossier: @folderTitle',
+  'paste': 'Coller',
+  'no_folder_pdf': 'Aucun fichier ni dossier ajouté',
 };
