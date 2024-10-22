@@ -10,7 +10,7 @@ final Map<String, String> enUS = {
   'an_error_occured': 'An error occured',
   'enter_json_repo_url': 'Enter the JSON URL of a DocuFetch repository',
   'add_pdf_from_url': 'Add PDF from URL',
-  'add_pdf_from_file': 'Add PDF from file',
+  'add_pdf_from_phone': 'Add PDF from your smartphone',
   'validate': 'Validate',
   'cancel': 'Cancel',
   'empty_pdf_list':
@@ -22,7 +22,7 @@ final Map<String, String> enUS = {
   'json_repo_url_example': 'Example : https://example.com/file.json',
   'no_json_found_repo': 'No DocuFetch JSON file found in this repository',
   'no_json_url': 'No JSON URL found. Please enter a valid JSON URL',
-  'repository_list': 'Your repository list',
+  'repository_list': 'Manage your repository list',
   'close': 'Close',
   'delete_repo_error': 'An error occured while deleting the repository',
   'error_downloading_files': 'Error downloading files',
@@ -54,6 +54,17 @@ final Map<String, String> enUS = {
   'delete_selected_pdfs_confirmation':
       'Are you sure you want to delete the selected PDFs?',
   'docufetch_tutorial': 'DocuFetch Tutorial',
+  'error_inserting_repository': 'Error inserting the repository',
+  'back': 'Back',
+  'cancel_selection': 'Cancel selection',
+  'select': 'Select',
+  'select_all': 'Select all',
+  'deselect_all': 'Deselect all',
+  'cut': 'Cut',
+  'error_moving_pdf': 'Error moving the PDF: @pdfTitle',
+  'error_moving_folder': 'Error moving the folder: @folderTitle',
+  'paste': 'Paste',
+  'no_folder_pdf': 'No file or folder added',
 };
 
 final Map<String, String> fr = {
@@ -61,7 +72,7 @@ final Map<String, String> fr = {
   'an_error_occured': 'Une erreur est survenue',
   'enter_json_repo_url': "Entrer l'URL JSON d'un dépôt DocuFetch",
   'add_pdf_from_url': 'Ajouter un/des PDF depuis une URL',
-  'add_pdf_from_file': 'Ajouter un/des PDF depuis un fichier',
+  'add_pdf_from_phone': 'Ajouter un/des PDF depuis votre smartphone',
   'validate': 'Valider',
   'cancel': 'Annuler',
   'empty_pdf_list':
@@ -73,7 +84,7 @@ final Map<String, String> fr = {
   'json_repo_url_example': 'Exemple : https://example.com/fichier.json',
   'no_json_found_repo': 'Aucun fichier JSON DocuFetch trouvé dans ce dépôt',
   'no_json_url': 'Aucune URL JSON trouvée. Veuillez entrer une URL JSON valide',
-  'repository_list': 'Liste de vos dépôts',
+  'repository_list': 'Gérer la liste de vos dépôts',
   'close': 'Fermer',
   'delete_repo_error':
       'Une erreur est survenue lors de la suppression du dépôt',
@@ -110,4 +121,15 @@ final Map<String, String> fr = {
   'delete_selected_pdfs_confirmation':
       'Êtes-vous sûr de vouloir supprimer les PDF sélectionnés ?',
   'docufetch_tutorial': 'Tutoriel DocuFetch',
+  'error_inserting_repository': 'Erreur lors de l\'insertion du dépôt',
+  'back': 'Retour',
+  'cancel_select': 'Annuler séléction',
+  'select': 'Sélectionner',
+  'select_all': 'Tout sélectionner',
+  'deselect_all': 'Tout desélectionner',
+  'cut': 'Couper',
+  'error_moving_pdf': 'Erreur lors du déplacement du PDF: @pdfTitle',
+  'error_moving_folder': 'Erreur lors du déplacement du dossier: @folderTitle',
+  'paste': 'Coller',
+  'no_folder_pdf': 'Aucun fichier ni dossier ajouté',
 };

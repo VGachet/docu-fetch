@@ -7,6 +7,6 @@ class SplashScreenController extends GetxController {
     super.onReady();
 
     await Future<void>.delayed(const Duration(seconds: 1));
-    Get.offNamed(Routes.home);
+    Get.offNamed(Routes.pdfList);
   }
 }

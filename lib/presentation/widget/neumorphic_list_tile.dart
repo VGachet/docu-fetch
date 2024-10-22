@@ -1,7 +1,9 @@
 import 'package:docu_fetch/domain/model/text_icon.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_colors.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
+import 'package:docu_fetch/presentation/ui/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class NeumorphicListTile extends StatelessWidget {
   const NeumorphicListTile({
@@ -14,6 +16,11 @@ class NeumorphicListTile extends StatelessWidget {
     this.onLongPress,
     this.trailingDropdown,
     this.trailingDropdownPadding = 0,
+    this.onDismissed,
+    this.isSelectionMode = false,
+    this.isSelected = false,
+    this.dismissible = false,
+    this.onCheckboxChanged,
   });
 
   final String? title;
@@ -26,10 +33,34 @@ class NeumorphicListTile extends StatelessWidget {
   final double blur = 6.0;
   final Map<TextIcon, Function>? trailingDropdown;
   final double trailingDropdownPadding;
+  final DismissDirectionCallback? onDismissed;
+  final bool isSelectionMode;
+  final bool isSelected;
+  final bool dismissible;
+  final ValueChanged<bool?>? onCheckboxChanged;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context) => dismissible
+      ? Dismissible(
+          key: UniqueKey(),
+          onDismissed: onDismissed,
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: const Icon(Icons.delete, color: Colors.white),
+          ),
+          secondaryBackground: Container(
+            color: Colors.red,
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: const Icon(Icons.delete, color: Colors.white),
+          ),
+          child: listTileWidget(),
+        )
+      : listTileWidget();
+
+  Widget listTileWidget() => Container(
         decoration: BoxDecoration(
           color: CustomColors.colorGreyLight,
           borderRadius: BorderRadius.circular(12),
@@ -51,13 +82,28 @@ class NeumorphicListTile extends StatelessWidget {
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(
               horizontal: 16, vertical: CustomMargins.margin8),
-          title: title != null
-              ? Text(title!, style: const TextStyle(color: Colors.black))
-              : null,
+          title: title != null ? Text(title!, style: CustomTheme.body) : null,
           subtitle: subtitle != null
-              ? Text(subtitle!, style: const TextStyle(color: Colors.black))
+              ? Text(subtitle!, style: CustomTheme.body)
               : null,
-          leading: leading,
+          leading: isSelectionMode
+              ? Checkbox(
+                  value: isSelected,
+                  onChanged: onCheckboxChanged,
+                  side: BorderSide(color: Get.theme.colorScheme.primary),
+                  splashRadius: 20,
+                  fillColor: WidgetStateProperty.resolveWith<Color>(
+                      (Set<WidgetState> states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return Get.theme.colorScheme
+                          .primary; // Black background when selected
+                    }
+                    return Get.theme.colorScheme
+                        .primary; // Black background when not selected
+                  }),
+                  checkColor: Get.theme.colorScheme.surface, // White tick
+                )
+              : leading,
           trailing: trailingDropdown != null
               ? Row(mainAxisSize: MainAxisSize.min, children: [
                   PopupMenuButton<TextIcon>(
@@ -76,7 +122,7 @@ class NeumorphicListTile extends StatelessWidget {
                           value: textIcon,
                           child: ListTile(
                             leading: Icon(textIcon.icon),
-                            title: Text(textIcon.text),
+                            title: Text(textIcon.text, style: CustomTheme.body),
                           ),
                         ),
                     ],
@@ -86,6 +132,6 @@ class NeumorphicListTile extends StatelessWidget {
               : trailing,
           onTap: onTap,
           onLongPress: onLongPress,
-        ));
-  }
+        ),
+      );
 }

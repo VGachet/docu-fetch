@@ -51,9 +51,11 @@ class MainRepositoryImpl implements MainRepository {
   }
 
   @override
-  Future<Resource<List<Pdf>>> getLocalPdfList() async {
+  Future<Resource<List<Pdf>>> getLocalPdfList(int? folderId) async {
     try {
-      final pdfList = await database.pdfDao.findAll();
+      final pdfList = folderId != null
+          ? await database.pdfDao.findPdfListByFolderId(folderId)
+          : await database.pdfDao.findRootPdfList();
       return Success(pdfList);
     } catch (_) {
       return const Error(ErrorStatus.unexpected);
@@ -132,8 +134,28 @@ class MainRepositoryImpl implements MainRepository {
   }
 
   @override
+  Future<Resource<void>> setNullPdfFolderId(int id) async {
+    try {
+      await database.pdfDao.setNullFolderId(id);
+      return const Success(null);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
+  Future<Resource<void>> setNullParentFolderId(int id) async {
+    try {
+      await database.folderDao.setNullParentFolder(id);
+      return const Success(null);
+    } catch (_) {
+      return const Error(ErrorStatus.unexpected);
+    }
+  }
+
+  @override
   Future<Resource<int>> insertLocalFolder(Folder folder) async {
-    final getFolderListResource = await getLocalFolderList();
+    final getFolderListResource = await getLocalFolderList(folder.parentFolder);
 
     if (getFolderListResource is Error) {
       return const Error(ErrorStatus.unexpected);
@@ -155,9 +177,12 @@ class MainRepositoryImpl implements MainRepository {
   }
 
   @override
-  Future<Resource<List<Folder>>> getLocalFolderList() async {
+  Future<Resource<List<Folder>>> getLocalFolderList(int? parentFolderId) async {
     try {
-      return Success(await database.folderDao.findAll());
+      final folderList = parentFolderId != null
+          ? await database.folderDao.findFolderListByParentId(parentFolderId)
+          : await database.folderDao.findRootFolderList();
+      return Success(folderList);
     } catch (_) {
       return const Error(ErrorStatus.unexpected);
     }

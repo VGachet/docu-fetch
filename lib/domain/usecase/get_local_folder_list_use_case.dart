@@ -4,12 +4,12 @@ import 'package:docu_fetch/domain/usecase/usecase.dart';
 import 'package:docu_fetch/util/resource.dart';
 
 class GetLocalFolderListUseCase
-    implements SimpleUseCase<Resource<List<Folder>>> {
+    implements UseCase<Resource<List<Folder>>, int?> {
   final MainRepository mainRepository;
 
   const GetLocalFolderListUseCase({required this.mainRepository});
 
   @override
-  Future<Resource<List<Folder>>> call() async =>
-      mainRepository.getLocalFolderList();
+  Future<Resource<List<Folder>>> call(int? parentFolderId) async =>
+      mainRepository.getLocalFolderList(parentFolderId);
 }

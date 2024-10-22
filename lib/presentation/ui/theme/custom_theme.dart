@@ -1,5 +1,6 @@
 import 'package:docu_fetch/presentation/ui/theme/custom_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 mixin CustomTheme {
   //Theme applied when the device is in light mode
@@ -60,21 +61,21 @@ mixin CustomTheme {
         ),
       );
 
-  static TextStyle get title => const TextStyle(
+  static TextStyle get title => TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold,
-        color: CustomColors.colorBlack,
+        color: Get.theme.colorScheme.primary,
       );
 
-  static TextStyle get subtitle => const TextStyle(
+  static TextStyle get subtitle => TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,
-        color: CustomColors.colorBlack,
+        color: Get.theme.colorScheme.primary,
       );
 
-  static TextStyle get body => const TextStyle(
+  static TextStyle get body => TextStyle(
         fontSize: 14,
-        color: CustomColors.colorBlack,
+        color: Get.theme.colorScheme.primary,
       );
 
   static TextStyle get bodyDisabled => const TextStyle(
@@ -82,8 +83,8 @@ mixin CustomTheme {
         color: CustomColors.colorInactive,
       );
 
-  static TextStyle get bodyRed => const TextStyle(
+  static TextStyle get bodyRed => TextStyle(
         fontSize: 14,
-        color: CustomColors.colorRed,
+        color: Get.theme.colorScheme.onError,
       );
 }
