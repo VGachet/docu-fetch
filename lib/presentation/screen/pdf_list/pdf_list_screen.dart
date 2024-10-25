@@ -54,7 +54,7 @@ class PdfListScreen extends StatelessWidget {
                   color: Get.theme.colorScheme.onSurface,
                 ),
                 child: Text(
-                  'Docu Fetch',
+                  'DocuFetch',
                   style: CustomTheme.title
                       .copyWith(color: Get.theme.colorScheme.secondary),
                 ),
@@ -86,10 +86,6 @@ class PdfListScreen extends StatelessWidget {
                   Navigator.pop(context);
                   showRenameFolderDialog();
                 },
-              ),
-              Container(
-                height: 1,
-                color: Get.theme.colorScheme.onSurface,
               ),
               ListTile(
                 leading: const Icon(Icons.list_alt),
@@ -615,35 +611,46 @@ class PdfListScreen extends StatelessWidget {
           height: 300,
           width: Get.width,
           child: Obx(
-            () => ListView.builder(
-              shrinkWrap: true,
-              itemCount: controller.repositoryList.length,
-              itemBuilder: (context, index) {
-                final repo = controller.repositoryList[index];
-                return NeumorphicListTile(
-                  title: repo.name,
-                  subtitle: repo.url,
-                  onTap: () {
-                    Get.back();
-                    controller.downloadPdf(
-                        repositoryUrl: repo.url, repositoryName: repo.name);
-                  },
-                  trailingDropdown: {
-                    TextIcon(text: 'update'.tr, icon: Icons.update): () =>
-                        controller.downloadPdf(
-                            repositoryUrl: repo.url, repositoryName: repo.name),
-                    TextIcon(text: 'delete'.tr, icon: Icons.delete_outline):
-                        () => controller.deleteLocalRepository(repo),
-                  },
-                  trailing: NeumorphicButton(
-                    icon: Icons.delete,
-                    onTap: () async {
-                      await controller.deleteLocalRepository(repo);
+            () => controller.repositoryList.isEmpty
+                ? Center(
+                    child: Text(
+                      'empty_repository_list'.tr,
+                      style: CustomTheme.body,
+                    ),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: controller.repositoryList.length,
+                    itemBuilder: (context, index) {
+                      final repo = controller.repositoryList[index];
+                      return NeumorphicListTile(
+                        title: repo.name,
+                        subtitle: repo.url,
+                        onTap: () {
+                          Get.back();
+                          controller.downloadPdf(
+                              repositoryUrl: repo.url,
+                              repositoryName: repo.name);
+                        },
+                        trailingDropdown: {
+                          TextIcon(text: 'update'.tr, icon: Icons.update): () =>
+                              controller.downloadPdf(
+                                  repositoryUrl: repo.url,
+                                  repositoryName: repo.name),
+                          TextIcon(
+                                  text: 'delete'.tr,
+                                  icon: Icons.delete_outline):
+                              () => controller.deleteLocalRepository(repo),
+                        },
+                        trailing: NeumorphicButton(
+                          icon: Icons.delete,
+                          onTap: () async {
+                            await controller.deleteLocalRepository(repo);
+                          },
+                        ),
+                      );
                     },
                   ),
-                );
-              },
-            ),
           ),
         ),
         actions: [

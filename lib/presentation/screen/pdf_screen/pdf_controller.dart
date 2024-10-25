@@ -6,6 +6,7 @@ import 'package:docu_fetch/presentation/main_controller.dart';
 import 'package:docu_fetch/presentation/widget/alert_message.dart';
 import 'package:docu_fetch/util/resource.dart';
 import 'package:get/get.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class PdfController extends GetxController {
   final Pdf pdfArgument = Get.arguments as Pdf;
@@ -22,6 +23,10 @@ class PdfController extends GetxController {
   });
 
   RxBool isAppBarVisible = true.obs;
+
+  var zoomLevel = 1.0.obs;
+
+  final PdfViewerController pdfViewerController = PdfViewerController();
 
   @override
   void onInit() {
@@ -58,6 +63,30 @@ class PdfController extends GetxController {
     }
 
     mainController.isLoading.value = false;
+  }
+
+  Future<void> toggleLayoutMode() async {
+    mainController.isLoading.value = true;
+
+    final updatedPdf =
+        pdf.value!.copyWith(isContinuous: !pdf.value!.isContinuous);
+
+    final updatePdfOrientationResource =
+        await updateLocalPdfUseCase(updatedPdf);
+
+    if (updatePdfOrientationResource is Success) {
+      pdf.value = updatedPdf;
+    } else {
+      AlertMessage.show(message: 'error_update_pdf_orientation'.tr);
+    }
+
+    mainController.isLoading.value = false;
+  }
+
+  // Method to update the zoom level
+  void updateZoomLevel(double newZoomLevel) {
+    pdfViewerController.zoomLevel = newZoomLevel;
+    zoomLevel.value = newZoomLevel;
   }
 
   @override

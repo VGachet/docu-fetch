@@ -100,7 +100,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `renamedTitle` TEXT, `path` TEXT, `url` TEXT, `version` REAL, `description` TEXT, `lastPageOpened` INTEGER NOT NULL, `folderId` INTEGER, `order` INTEGER NOT NULL, `isHorizontal` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Pdf` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `renamedTitle` TEXT, `path` TEXT, `url` TEXT, `version` REAL, `description` TEXT, `lastPageOpened` INTEGER NOT NULL, `folderId` INTEGER, `order` INTEGER NOT NULL, `isHorizontal` INTEGER NOT NULL, `isContinuous` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Repository` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `url` TEXT NOT NULL, `name` TEXT NOT NULL)');
         await database.execute(
@@ -147,7 +147,8 @@ class _$PdfDao extends PdfDao {
                   'lastPageOpened': item.lastPageOpened,
                   'folderId': item.folderId,
                   'order': item.order,
-                  'isHorizontal': item.isHorizontal ? 1 : 0
+                  'isHorizontal': item.isHorizontal ? 1 : 0,
+                  'isContinuous': item.isContinuous ? 1 : 0
                 }),
         _pdfUpdateAdapter = UpdateAdapter(
             database,
@@ -164,7 +165,8 @@ class _$PdfDao extends PdfDao {
                   'lastPageOpened': item.lastPageOpened,
                   'folderId': item.folderId,
                   'order': item.order,
-                  'isHorizontal': item.isHorizontal ? 1 : 0
+                  'isHorizontal': item.isHorizontal ? 1 : 0,
+                  'isContinuous': item.isContinuous ? 1 : 0
                 }),
         _pdfDeletionAdapter = DeletionAdapter(
             database,
@@ -181,7 +183,8 @@ class _$PdfDao extends PdfDao {
                   'lastPageOpened': item.lastPageOpened,
                   'folderId': item.folderId,
                   'order': item.order,
-                  'isHorizontal': item.isHorizontal ? 1 : 0
+                  'isHorizontal': item.isHorizontal ? 1 : 0,
+                  'isContinuous': item.isContinuous ? 1 : 0
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -210,7 +213,8 @@ class _$PdfDao extends PdfDao {
             lastPageOpened: row['lastPageOpened'] as int,
             folderId: row['folderId'] as int?,
             order: row['order'] as int,
-            isHorizontal: (row['isHorizontal'] as int) != 0));
+            isHorizontal: (row['isHorizontal'] as int) != 0,
+            isContinuous: (row['isContinuous'] as int) != 0));
   }
 
   @override
@@ -227,7 +231,8 @@ class _$PdfDao extends PdfDao {
             lastPageOpened: row['lastPageOpened'] as int,
             folderId: row['folderId'] as int?,
             order: row['order'] as int,
-            isHorizontal: (row['isHorizontal'] as int) != 0),
+            isHorizontal: (row['isHorizontal'] as int) != 0,
+            isContinuous: (row['isContinuous'] as int) != 0),
         arguments: [id]);
   }
 
@@ -245,7 +250,8 @@ class _$PdfDao extends PdfDao {
             lastPageOpened: row['lastPageOpened'] as int,
             folderId: row['folderId'] as int?,
             order: row['order'] as int,
-            isHorizontal: (row['isHorizontal'] as int) != 0),
+            isHorizontal: (row['isHorizontal'] as int) != 0,
+            isContinuous: (row['isContinuous'] as int) != 0),
         arguments: [folderId]);
   }
 
@@ -263,7 +269,8 @@ class _$PdfDao extends PdfDao {
             lastPageOpened: row['lastPageOpened'] as int,
             folderId: row['folderId'] as int?,
             order: row['order'] as int,
-            isHorizontal: (row['isHorizontal'] as int) != 0));
+            isHorizontal: (row['isHorizontal'] as int) != 0,
+            isContinuous: (row['isContinuous'] as int) != 0));
   }
 
   @override
