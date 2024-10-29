@@ -28,13 +28,17 @@ class PdfController extends GetxController {
 
   final PdfViewerController pdfViewerController = PdfViewerController();
 
+  PdfDocumentLoadedDetails? documentLoadedDetails;
+
+  bool isZooming = false;
+
   @override
   void onInit() {
     super.onInit();
     pdf.value = pdfArgument;
   }
 
-  void updateLastPageOpened(int lastPage) async {
+  Future<void> updateLastPageOpened(int lastPage) async {
     final resource = await updateLastPageOpenedUseCase(
         PdfLastPageOpenParam(id: pdf.value!.id!, lastPage: lastPage));
 
@@ -83,7 +87,6 @@ class PdfController extends GetxController {
     mainController.isLoading.value = false;
   }
 
-  // Method to update the zoom level
   void updateZoomLevel(double newZoomLevel) {
     pdfViewerController.zoomLevel = newZoomLevel;
     zoomLevel.value = newZoomLevel;

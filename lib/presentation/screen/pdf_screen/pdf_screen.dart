@@ -48,6 +48,10 @@ class PdfScreen extends StatelessWidget {
                     () => SfPdfViewer.file(
                       File(controller.pdf.value!.path!),
                       key: _pdfViewerKey,
+                      onDocumentLoaded: (documentLoadedDetails) async {
+                        controller.documentLoadedDetails =
+                            documentLoadedDetails;
+                      },
                       controller: controller.pdfViewerController,
                       scrollDirection: controller.pdf.value!.isHorizontal
                           ? PdfScrollDirection.horizontal
@@ -57,14 +61,14 @@ class PdfScreen extends StatelessWidget {
                       pageLayoutMode: controller.pdf.value!.isContinuous
                           ? PdfPageLayoutMode.continuous
                           : PdfPageLayoutMode.single,
-                      maxZoomLevel: 2,
+                      maxZoomLevel: 3,
                       canShowPageLoadingIndicator: false,
                       onZoomLevelChanged: (zoomLevel) {
                         controller.zoomLevel.value = zoomLevel.newZoomLevel;
                       },
-                      onPageChanged: (pageChanceCallback) {
-                        controller.pdf.value!.lastPageOpened =
-                            pageChanceCallback.newPageNumber;
+                      onPageChanged: (pageChanceCallback) async {
+                        await controller.updateLastPageOpened(
+                            pageChanceCallback.newPageNumber);
                       },
                     ),
                   ),
@@ -88,7 +92,7 @@ class PdfScreen extends StatelessWidget {
                     height: Get.height - 50,
                     width: 50,
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         controller.pdfViewerController.previousPage();
                       },
                       child: Container(
@@ -102,7 +106,7 @@ class PdfScreen extends StatelessWidget {
                     height: Get.height - 50,
                     width: 50,
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         controller.pdfViewerController.nextPage();
                       },
                       child: Container(
@@ -122,13 +126,13 @@ class PdfScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('settings'.tr, style: CustomTheme.title),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                title: Text('toggle_orientation'.tr, style: CustomTheme.body),
-                trailing: Obx(
-                  () => Switch(
+          content: Obx(
+            () => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: Text('toggle_orientation'.tr, style: CustomTheme.body),
+                  trailing: Switch(
                     value: controller.pdf.value!.isHorizontal,
                     thumbColor: WidgetStateProperty.all(
                         Get.theme.colorScheme.secondary),
@@ -137,11 +141,9 @@ class PdfScreen extends StatelessWidget {
                     },
                   ),
                 ),
-              ),
-              ListTile(
-                title: Text('toggle_layout_mode'.tr, style: CustomTheme.body),
-                trailing: Obx(
-                  () => Switch(
+                ListTile(
+                  title: Text('toggle_layout_mode'.tr, style: CustomTheme.body),
+                  trailing: Switch(
                     value: controller.pdf.value!.isContinuous,
                     thumbColor: WidgetStateProperty.all(
                         Get.theme.colorScheme.secondary),
@@ -150,12 +152,10 @@ class PdfScreen extends StatelessWidget {
                     },
                   ),
                 ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 120,
-                child: Obx(
-                  () => Column(
+                SizedBox(
+                  width: double.infinity,
+                  height: 120,
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: CustomMargins.margin16),
@@ -187,8 +187,8 @@ class PdfScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(

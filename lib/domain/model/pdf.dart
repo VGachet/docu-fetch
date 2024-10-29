@@ -16,19 +16,20 @@ class Pdf {
   bool isHorizontal;
   bool isContinuous;
 
-  Pdf(
-      {this.id,
-      required this.title,
-      this.renamedTitle,
-      this.path,
-      this.url,
-      this.version,
-      this.description,
-      this.lastPageOpened = 0,
-      this.folderId,
-      this.order = 0,
-      this.isHorizontal = true,
-      this.isContinuous = false});
+  Pdf({
+    this.id,
+    required this.title,
+    this.renamedTitle,
+    this.path,
+    this.url,
+    this.version,
+    this.description,
+    this.lastPageOpened = 0,
+    this.folderId,
+    this.order = 0,
+    this.isHorizontal = true,
+    this.isContinuous = false,
+  });
 
   String getTitle() {
     return renamedTitle ?? title;
