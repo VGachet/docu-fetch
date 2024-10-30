@@ -42,9 +42,9 @@ DocuFetch is a mobile application that fetches PDF files from a server, import i
 
 ### Client side (mobile app)
 
-- In the Home page, select the "Menu" floating button
-- To download PDF files from a server, click on "Add PDF from URL" then in the field, add a url that point to the json file of a DocuFetch repository
+- In the Home page, select the "Menu" button
+- To download PDF files from a server, click on "Add PDF from URL" then in the field, add a url that point to the json file of a DocuFetch distant folder (repository)
 - To import a PDF file from your device, click on "Import PDF from device"
 - To read a PDF file, click on the PDF file in the Home page
-- To delete a PDF file, click on the "Delete" button in the PDF file page
-- To update PDF files, select the "Menu" floating button in the PDF file page, choose "Your repository list" and click on the repository you want to update the PDF file from
+- To delete a PDF file, long press on the PDF you want to delete then select "Delete". With this method you can also delete multiple PDF and folders at once
+- To update PDF files based on the version, go to the folder where the PDF you want to update is, select the "Menu" button, choose "Your distant folder list" and click on the distant folder (repository) you want to update the PDF file from

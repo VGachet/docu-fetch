@@ -71,11 +71,6 @@ final Map<String, String> enUS = {
   'empty_repository_list': 'Distant folder url list is empty',
   'zoom': 'Zoom',
   'toggle_layout_mode': 'Single page mode / continuous page mode',
-  'error_update_pdf_default_zoom_level':
-      'Error updating the PDF default zoom level',
-  'read_mode': 'Read mode',
-  'default_zoom_level_set': 'Default zoom level set : @zoomLevel',
-  'choose_default_zoom_level': 'Choose the default zoom level',
 };
 
 final Map<String, String> fr = {
@@ -150,9 +145,4 @@ final Map<String, String> fr = {
   'empty_repository_list': 'La liste des dossiers distants est vide',
   'zoom': 'Zoom',
   'toggle_layout_mode': 'Affichege Page unique / Page continue',
-  'error_update_pdf_default_zoom_level':
-      'Erreur lors de la mise à jour du niveau de zoom par défaut du PDF',
-  'read_mode': 'Mode lecture',
-  'default_zoom_level_set': 'Niveau de zoom par défaut : @zoomLevel',
-  'choose_default_zoom_level': 'Choisir le niveau de zoom par défaut',
 };

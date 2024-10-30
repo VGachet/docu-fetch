@@ -87,9 +87,9 @@ class PdfScreen extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    top: 50,
+                    bottom: 50,
                     left: 0,
-                    height: Get.height - 50,
+                    height: Get.height - 100,
                     width: 50,
                     child: GestureDetector(
                       onTap: () async {
@@ -101,9 +101,9 @@ class PdfScreen extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    top: 50,
+                    bottom: 50,
                     right: 0,
-                    height: Get.height - 50,
+                    height: Get.height - 100,
                     width: 50,
                     child: GestureDetector(
                       onTap: () async {
