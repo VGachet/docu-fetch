@@ -1,5 +1,4 @@
 import 'package:docu_fetch/domain/model/text_icon.dart';
-import 'package:docu_fetch/presentation/ui/theme/custom_colors.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_theme.dart';
 import 'package:flutter/material.dart';
@@ -62,17 +61,17 @@ class NeumorphicListTile extends StatelessWidget {
 
   Widget listTileWidget() => Container(
         decoration: BoxDecoration(
-          color: CustomColors.colorGreyLight,
+          color: Get.theme.colorScheme.secondary,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: CustomColors.colorGrey,
+              color: Get.theme.colorScheme.shadow,
               offset: distance,
               blurRadius: blur,
               spreadRadius: 1,
             ),
             BoxShadow(
-              color: CustomColors.colorGrey,
+              color: Get.theme.colorScheme.shadow,
               offset: distance,
               blurRadius: blur,
               spreadRadius: 1,
@@ -107,8 +106,9 @@ class NeumorphicListTile extends StatelessWidget {
           trailing: trailingDropdown != null
               ? Row(mainAxisSize: MainAxisSize.min, children: [
                   PopupMenuButton<TextIcon>(
-                    elevation: 6,
-                    color: CustomColors.colorGreyLight,
+                    elevation: 4,
+                    shadowColor: Get.theme.colorScheme.primary,
+                    color: Get.theme.colorScheme.secondary,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                     offset: const Offset(16, 45),

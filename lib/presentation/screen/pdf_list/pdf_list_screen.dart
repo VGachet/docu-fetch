@@ -4,7 +4,6 @@ import 'package:docu_fetch/domain/model/text_icon.dart';
 import 'package:docu_fetch/presentation/routes.dart';
 import 'package:docu_fetch/presentation/screen/pdf_list/pdf_list_controller.dart';
 import 'package:docu_fetch/presentation/ui/lower_case_input_formatter.dart';
-import 'package:docu_fetch/presentation/ui/theme/custom_colors.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_theme.dart';
 import 'package:docu_fetch/presentation/widget/neumorphic_button.dart';
@@ -47,17 +46,15 @@ class PdfListScreen extends StatelessWidget {
         ),
         backgroundColor: Get.theme.colorScheme.secondary,
         drawer: Drawer(
+          backgroundColor: Get.theme.colorScheme.secondary,
+          shadowColor: Get.theme.colorScheme.primary,
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Get.theme.colorScheme.onSurface,
-                ),
                 child: Text(
                   'DocuFetch',
-                  style: CustomTheme.title
-                      .copyWith(color: Get.theme.colorScheme.secondary),
+                  style: CustomTheme.title,
                 ),
               ),
               ListTile(
@@ -354,6 +351,7 @@ class PdfListScreen extends StatelessWidget {
                                                 flex: 1,
                                                 child: InkWell(
                                                   onTap: () {
+                                                    Get.back();
                                                     Get.toNamed(Routes.pdf,
                                                             arguments: pdf)
                                                         ?.then((_) {
@@ -415,6 +413,7 @@ class PdfListScreen extends StatelessWidget {
                                                 child: InkWell(
                                                   onTap: () {
                                                     OpenFile.open(pdf.path);
+                                                    Get.back();
                                                   },
                                                   child: Container(
                                                     padding:
@@ -459,10 +458,15 @@ class PdfListScreen extends StatelessWidget {
                                               ),
                                             ],
                                           ),
+                                          elevation: 4,
                                           backgroundColor:
                                               Get.theme.colorScheme.secondary,
                                           isScrollControlled: true,
-                                          shape: const RoundedRectangleBorder(
+                                          shape: RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                color: Get
+                                                    .theme.colorScheme.shadow,
+                                              ),
                                               borderRadius: BorderRadius.zero),
                                         );
                                       }
@@ -520,10 +524,11 @@ class PdfListScreen extends StatelessWidget {
     showDialog(
       context: Get.overlayContext!,
       builder: (context) => AlertDialog(
+        shadowColor: Get.theme.colorScheme.shadow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding: const EdgeInsets.all(CustomMargins.margin16),
-        elevation: 4,
-        backgroundColor: CustomColors.colorGreyLight,
+        backgroundColor: Get.theme.colorScheme.secondary,
+        surfaceTintColor: Get.theme.colorScheme.primary,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -536,12 +541,15 @@ class PdfListScreen extends StatelessWidget {
                 hintText: 'repo_name_example'.tr,
                 border: const OutlineInputBorder(),
                 labelStyle: CustomTheme.body,
-                enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.colorBlack)),
-                disabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.colorBlack)),
-                focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Get.theme.colorScheme.primary)),
+                disabledBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Get.theme.colorScheme.primary)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Get.theme.colorScheme.primary)),
               ),
             ),
             const SizedBox(height: CustomMargins.margin16),
@@ -557,12 +565,15 @@ class PdfListScreen extends StatelessWidget {
                   border: const OutlineInputBorder(),
                   labelStyle: CustomTheme.body,
                   errorText: controller.repoUrlFieldError.value,
-                  enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: CustomColors.colorBlack)),
-                  disabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: CustomColors.colorBlack)),
-                  focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: CustomColors.colorBlack)),
+                  enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Get.theme.colorScheme.primary)),
+                  disabledBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Get.theme.colorScheme.primary)),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Get.theme.colorScheme.primary)),
                 ),
                 inputFormatters: [LowerCaseTextFormatter()],
               ),
@@ -603,10 +614,11 @@ class PdfListScreen extends StatelessWidget {
     showDialog(
       context: Get.overlayContext!,
       builder: (context) => AlertDialog(
+        shadowColor: Get.theme.colorScheme.shadow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding: const EdgeInsets.all(CustomMargins.margin16),
-        elevation: 4,
-        backgroundColor: CustomColors.colorGreyLight,
+        backgroundColor: Get.theme.colorScheme.secondary,
+        surfaceTintColor: Get.theme.colorScheme.primary,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -620,12 +632,15 @@ class PdfListScreen extends StatelessWidget {
                     : 'enter_folder_name'.tr,
                 border: const OutlineInputBorder(),
                 labelStyle: CustomTheme.body,
-                enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.colorBlack)),
-                disabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.colorBlack)),
-                focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Get.theme.colorScheme.primary)),
+                disabledBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Get.theme.colorScheme.primary)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Get.theme.colorScheme.primary)),
               ),
             ),
           ],
@@ -662,10 +677,11 @@ class PdfListScreen extends StatelessWidget {
     showDialog(
       context: Get.overlayContext!,
       builder: (context) => AlertDialog(
+        shadowColor: Get.theme.colorScheme.shadow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding: const EdgeInsets.all(CustomMargins.margin16),
-        elevation: 4,
-        backgroundColor: CustomColors.colorGreyLight,
+        backgroundColor: Get.theme.colorScheme.secondary,
+        surfaceTintColor: Get.theme.colorScheme.primary,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -707,10 +723,11 @@ class PdfListScreen extends StatelessWidget {
     showDialog(
       context: Get.overlayContext!,
       builder: (context) => AlertDialog(
+        shadowColor: Get.theme.colorScheme.shadow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.all(CustomMargins.margin8),
-        elevation: 4,
-        backgroundColor: CustomColors.colorGreyLight,
+        contentPadding: const EdgeInsets.all(CustomMargins.margin16),
+        backgroundColor: Get.theme.colorScheme.secondary,
+        surfaceTintColor: Get.theme.colorScheme.primary,
         content: SizedBox(
           height: 300,
           width: Get.width,
@@ -771,10 +788,11 @@ class PdfListScreen extends StatelessWidget {
     showDialog(
       context: Get.overlayContext!,
       builder: (context) => AlertDialog(
+        shadowColor: Get.theme.colorScheme.shadow,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         contentPadding: const EdgeInsets.all(CustomMargins.margin16),
-        elevation: 4,
-        backgroundColor: CustomColors.colorGreyLight,
+        backgroundColor: Get.theme.colorScheme.secondary,
+        surfaceTintColor: Get.theme.colorScheme.primary,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -786,12 +804,15 @@ class PdfListScreen extends StatelessWidget {
                 labelText: 'enter_new_pdf_name'.tr,
                 border: const OutlineInputBorder(),
                 labelStyle: CustomTheme.body,
-                enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.colorBlack)),
-                disabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.colorBlack)),
-                focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: CustomColors.colorBlack)),
+                enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Get.theme.colorScheme.primary)),
+                disabledBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Get.theme.colorScheme.primary)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: Get.theme.colorScheme.primary)),
               ),
             ),
           ],

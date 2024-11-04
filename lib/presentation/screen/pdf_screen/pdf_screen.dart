@@ -23,6 +23,7 @@ class PdfScreen extends StatelessWidget {
           : PageContainer(
               appBar: controller.isAppBarVisible.value
                   ? AppBar(
+                      backgroundColor: Get.theme.colorScheme.secondary,
                       title: Text(
                           controller.pdf.value!.renamedTitle ??
                               controller.pdf.value!.title,
@@ -125,6 +126,12 @@ class PdfScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shadowColor: Get.theme.colorScheme.shadow,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          contentPadding: const EdgeInsets.all(CustomMargins.margin16),
+          backgroundColor: Get.theme.colorScheme.surface,
+          //surfaceTintColor: Get.theme.colorScheme.primary,
           title: Text('settings'.tr, style: CustomTheme.title),
           content: Obx(
             () => Column(
@@ -176,8 +183,8 @@ class PdfScreen extends StatelessWidget {
                         child: Slider(
                           value: controller.zoomLevel.value,
                           min: 1.0,
-                          max: 2.0,
-                          divisions: 2,
+                          max: 3.0,
+                          divisions: 5,
                           label: '${controller.zoomLevel.value}x',
                           onChanged: (double value) {
                             controller.updateZoomLevel(value);

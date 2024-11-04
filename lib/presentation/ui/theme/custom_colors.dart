@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class CustomColors {
   static const Color colorWhite = Color(0xFFFFFFFF);
   static const Color colorBlack = Color(0xFF000000);
+  static const Color colorBlackLight = Color(0xFF333333);
   static const Color colorBorder = Color(0xFFE3E6ED);
   static const Color colorInactive = Color(0xFFCDD8E4);
   static const Color colorGreenLight = Color(0xFFB1F1E2);

@@ -15,6 +15,8 @@ mixin CustomTheme {
           onPrimary: CustomColors.colorBlack,
           onSecondary: CustomColors.colorBlack,
           onSurface: CustomColors.colorBlack,
+          shadow: CustomColors.colorGrey,
+          surfaceDim: CustomColors.colorGreyLight,
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: CustomColors.colorWhite,
@@ -39,13 +41,15 @@ mixin CustomTheme {
         colorScheme: const ColorScheme(
           brightness: Brightness.dark,
           primary: CustomColors.colorWhite,
-          secondary: CustomColors.colorGreyLight,
+          secondary: CustomColors.colorBlack,
           surface: CustomColors.colorBlack,
           error: CustomColors.colorBlack,
           onError: CustomColors.colorRedStrong,
           onPrimary: CustomColors.colorWhite,
           onSecondary: CustomColors.colorWhite,
           onSurface: CustomColors.colorWhite,
+          shadow: CustomColors.colorBlackLight,
+          surfaceDim: CustomColors.colorBlackLight,
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: CustomColors.colorBlack,

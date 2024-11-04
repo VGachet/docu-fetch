@@ -12,6 +12,7 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => PageContainer(
+        backgroundColor: Get.theme.colorScheme.secondary,
         body: Center(
             child: Padding(
                 padding: const EdgeInsets.all(CustomMargins.margin24),

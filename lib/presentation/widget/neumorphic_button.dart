@@ -1,4 +1,3 @@
-import 'package:docu_fetch/presentation/ui/theme/custom_colors.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_margins.dart';
 import 'package:docu_fetch/presentation/ui/theme/custom_theme.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -14,8 +13,6 @@ class NeumorphicButton extends StatelessWidget {
     this.isRound = false,
     this.text,
     this.isDisabled = false,
-    this.disabledColor = CustomColors.colorGreyLight,
-    this.iconColor = CustomColors.colorBlack,
   });
 
   final RxBool isElevated = false.obs;
@@ -27,8 +24,8 @@ class NeumorphicButton extends StatelessWidget {
   final bool isRound;
   final String? text;
   final bool isDisabled;
-  final Color disabledColor;
-  final Color iconColor;
+  final Color disabledColor = Get.theme.colorScheme.surfaceDim;
+  final Color iconColor = Get.theme.colorScheme.onSecondary;
 
   @override
   Widget build(BuildContext context) {
@@ -60,18 +57,18 @@ class NeumorphicButton extends StatelessWidget {
           height: text != null ? null : size.width,
           width: text != null ? null : size.height,
           decoration: BoxDecoration(
-            color: isDisabled ? disabledColor : CustomColors.colorGreyLight,
+            color: isDisabled ? disabledColor : Get.theme.colorScheme.secondary,
             borderRadius: BorderRadius.circular(isRound ? size.width : 12),
             boxShadow: [
               BoxShadow(
-                color: CustomColors.colorGrey,
+                color: Get.theme.colorScheme.shadow,
                 offset: distance.value,
                 blurRadius: blur.value,
                 spreadRadius: 1,
                 inset: isElevated.value,
               ),
               BoxShadow(
-                color: CustomColors.colorGrey,
+                color: Get.theme.colorScheme.shadow,
                 offset: distance.value,
                 blurRadius: blur.value,
                 spreadRadius: 1,
@@ -84,11 +81,7 @@ class NeumorphicButton extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                      Icon(icon,
-                          size: 20,
-                          color: isDisabled
-                              ? CustomColors.colorInactive
-                              : iconColor),
+                      Icon(icon, size: 20, color: iconColor),
                       if (text != null)
                         const SizedBox(width: CustomMargins.margin8),
                       if (text != null)
