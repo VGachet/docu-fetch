@@ -71,6 +71,8 @@ final Map<String, String> enUS = {
   'empty_repository_list': 'Distant folder url list is empty',
   'zoom': 'Zoom',
   'toggle_layout_mode': 'Single page mode / continuous page mode',
+  'open_in_viewer': 'Open in integrated PDF viewer',
+  'open_in_other_app': 'Open in another app',
 };
 
 final Map<String, String> fr = {
@@ -145,4 +147,6 @@ final Map<String, String> fr = {
   'empty_repository_list': 'La liste des dossiers distants est vide',
   'zoom': 'Zoom',
   'toggle_layout_mode': 'Affichege Page unique / Page continue',
+  'open_in_viewer': 'Ouvrir dans le lecteur de PDF intégré',
+  'open_in_other_app': 'Ouvrir dans une autre application',
 };

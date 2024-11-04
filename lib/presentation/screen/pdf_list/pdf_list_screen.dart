@@ -13,6 +13,7 @@ import 'package:docu_fetch/presentation/widget/page_container.dart';
 import 'package:docu_fetch/util/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:open_file/open_file.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class PdfListScreen extends StatelessWidget {
@@ -280,10 +281,6 @@ class PdfListScreen extends StatelessWidget {
                                           controller.loadFolderContent(folder);
                                         }
                                       },
-                                      /*dismissible: !controller.isSelectionMode.value,
-                                /onDismissed: (_) {
-                                  showDeleteConfirmDialog(folder: folder);
-                                },*/
                                       trailingDropdown: controller
                                               .isSelectionMode.value
                                           ? null
@@ -346,23 +343,130 @@ class PdfListScreen extends StatelessWidget {
                                       if (controller.isSelectionMode.value) {
                                         controller.toggleSelection(pdf);
                                       } else {
-                                        Get.toNamed(Routes.pdf, arguments: pdf)
-                                            ?.then((_) {
-                                          controller.loadFolderContent(
-                                              controller.parentFolderList
-                                                      .isNotEmpty
-                                                  ? controller
-                                                      .parentFolderList.last
-                                                  : null);
-                                        });
+                                        Get.bottomSheet(
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Expanded(
+                                                flex: 1,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    Get.toNamed(Routes.pdf,
+                                                            arguments: pdf)
+                                                        ?.then((_) {
+                                                      controller.loadFolderContent(
+                                                          controller
+                                                                  .parentFolderList
+                                                                  .isNotEmpty
+                                                              ? controller
+                                                                  .parentFolderList
+                                                                  .last
+                                                              : null);
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            CustomMargins
+                                                                .margin24),
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        const Icon(
+                                                          Icons
+                                                              .menu_book_outlined,
+                                                          size: 30,
+                                                        ),
+                                                        const SizedBox(
+                                                            height:
+                                                                CustomMargins
+                                                                    .margin16),
+                                                        Text(
+                                                            'open_in_viewer'.tr,
+                                                            maxLines: 3,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: CustomTheme
+                                                                .body),
+                                                        const SizedBox(
+                                                            height:
+                                                                CustomMargins
+                                                                    .margin32),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 1,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    OpenFile.open(pdf.path);
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            CustomMargins
+                                                                .margin24),
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        const Icon(
+                                                          Icons
+                                                              .open_in_new_outlined,
+                                                          size: 30,
+                                                        ),
+                                                        const SizedBox(
+                                                            height:
+                                                                CustomMargins
+                                                                    .margin16),
+                                                        Text(
+                                                            'open_in_other_app'
+                                                                .tr,
+                                                            maxLines: 3,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: CustomTheme
+                                                                .body),
+                                                        const SizedBox(
+                                                            height:
+                                                                CustomMargins
+                                                                    .margin32),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          backgroundColor:
+                                              Get.theme.colorScheme.secondary,
+                                          isScrollControlled: true,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.zero),
+                                        );
                                       }
                                     },
-                                    /*dismissible: !controller.isSelectionMode.value,
-                              onDismissed: (_) {
-                                if (!controller.isSelectionMode.value) {
-                                  showDeleteConfirmDialog(pdf: pdf);
-                                }
-                              },*/
                                     trailingDropdown: controller
                                             .isSelectionMode.value
                                         ? null
